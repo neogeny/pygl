@@ -31,22 +31,22 @@ class _Node:
 
 
 @dataclass
-class Error(_Node)
+class Error(_Node):
     msg : str
 
 
 @dataclass
-class Indent(_Node)
+class Indent(_Node):
     level: int
 
 
 @dataclass
-class Dedent(_Node)
+class Dedent(_Node):
     level: int
 
 
 @dataclass
-class Comment(_Node)
+class Comment(_Node):
     comment: str
 
 
@@ -127,7 +127,7 @@ class Rule(_HasExp):
 
     def genpython(self):
         return trim('''
-            def parse_{name}():
+            def parse_{name}(self):
             {exp}
                 return result
         ''').format(
@@ -142,9 +142,41 @@ class Grammar(_Node):
 
     def genpython(self):
         rules = '\n\n'.join(trim(r.genpython()) for r in self.rules)
-        return trim('''
+        result = trim('''
+            import argparse
             from pglc.context import ParseContext
             
             class PythonParser(ParseContext):
             {rules}
+                
+                
+            if __name__ == '__main__':
+                argp = argparse.ArgumentParser(description="Simple parser for Python")
+                addarg = argp.add_argument
+                
+                addarg('file',
+                       metavar="FILE",
+                       help="the input file to parse or '-' for standard input",
+                       nargs='?',
+                       # default='-',
+                )
+                addarg('startrule',
+                       metavar="STARTRULE",
+                       nargs='?',
+                       help="the start rule for parsing",
+                       default=None,
+                )
+                args = argp.parse_args()
+               
+                if args.file:
+                    with open(args.file) as f:
+                        text = f.read()
+                    
+                    parser = PythonParser(text)    
+                    print(parser.parse(args.startrule))
+                
+            
         ''').format(rules=indent(rules))
+
+        # compile(result, '<text>', mode='exec')
+        return result

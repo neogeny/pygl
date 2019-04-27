@@ -26,6 +26,10 @@ class ParseContext:
     pos: int = 0
     indent_levels: List[int] = field(default_factory=list, init=False)
 
+    def parse(self, startrule):
+        start = getattr(self, f'parse_{startrule}')
+        return start()
+
     def curr(self):
         if self.pos < len(self.text):
             return self.text[self.pos]
@@ -77,7 +81,7 @@ class ParseContext:
 
         self.indent_levels.pop()
         prev = self.current_indent()
-        if ind == prev
+        if ind == prev:
             return Dedent(level=ind, pos=self.pos, endpos=self.pos)
         else:
             return self.error('Expecting DEDENT')
