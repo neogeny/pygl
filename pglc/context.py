@@ -1,5 +1,5 @@
 import re
-from itertools import takewhile
+from itertools import takewhile, repeat
 from dataclasses import dataclass, field
 from typing import List
 
@@ -125,7 +125,7 @@ class ParseContext:
         return re.match(pattern, self.text, self.pos + offset)
 
     def closure(self, f):
-        return list(takewhile(lambda e: e, f))
+        return list(takewhile(lambda e: e, (f() for _ in repeat(None))))
 
     def closureplus(self, f):
         e = f()

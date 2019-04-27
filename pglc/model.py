@@ -76,7 +76,7 @@ class Token(_Node):
 @dataclass
 class Ref(_Name):
     def genpython(self):
-        return f'parse_{self.name}()'
+        return f'self.parse_{self.name}()'
 
 
 @dataclass
