@@ -34,6 +34,9 @@ class _Node:
 class Error(_Node):
     msg : str
 
+    def __bool__(self):
+        return False
+
 
 @dataclass
 class Indent(_Node):
@@ -130,6 +133,7 @@ class Rule(_HasExp):
         return trim('''
             def parse_{name}(self):
             {exp}
+                print('{name}', result)
                 return result
         ''').format(
             name=self.name,

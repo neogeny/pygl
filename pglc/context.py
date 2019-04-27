@@ -93,7 +93,7 @@ class ParseContext:
         return Error(msg=msg, pos=self.pos, endpos=self.pos)
 
     def is_error(self, e):
-        return not e or isinstance(e, Error)
+        return e and isinstance(e, Error)
 
     def is_not_error(self, e):
         return not self.is_error(e)
@@ -118,7 +118,7 @@ class ParseContext:
         e = p + len(token)
 
         if token != self.text[p:e]:
-            return
+            return self.error(f'expecting {token}')
 
         self.pos = e
         return token
@@ -135,7 +135,16 @@ class ParseContext:
         return p.match(self.text, self.pos + offset)
 
     def closure(self, f):
-        return list(takewhile(self.is_not_error, (f() for _ in repeat(None))))
+        result = []
+        while True:
+            e = f()
+            if self.is_error(e):
+                return e
+            elif e:
+                result.append(e)
+            else:
+                break
+        return result
 
     def closureplus(self, f):
         e = f()
@@ -150,6 +159,8 @@ class ParseContext:
             e = f()
             if self.is_error(e):
                 return e
-            else:
+            elif e:
                 result.append(e)
+            else:
+                break
         return result
