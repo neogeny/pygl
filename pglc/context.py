@@ -1,8 +1,9 @@
 import re
+from keyword import iskeyword
 from dataclasses import dataclass, field
 from typing import List
 
-from .model import Error, Comment, Indent, Dedent
+from .model import Error, Void, Comment, Indent, Dedent
 
 
 @dataclass(frozen=True)
@@ -40,25 +41,53 @@ class ParseContext:
         return self.match('async')
 
     def parse_NAME(self):
-        return self.matchre(r'\w[\w\d]*')
+        self.spaces()
+        p = self.pos
+        name = self.matchre(r'\w[\w\d]*')
+        if self.is_error(name):
+            return name
+        if iskeyword(name):
+            self.pos = p
+            return self.error('expecting NAME')
+        print('NAME', name)
+        return name
+
+    def parse_NUMBER(self):
+        self.spaces()
+        return (
+            self.matchre(r'[0-9][0-9_]*[.][0-9]*([eE][-+]?[0-9]+)?') or
+            self.matchre(r'[.][0-9]+([eE][-+]?[0-9]+)?') or
+            self.matchre(r'[0-9][0-9_]*[eE][-+]?[0-9]+') or
+            self.matchre(r'[0-9][0-9_]*')
+        )
+
+    def parse_STRING(self):
+        self.spaces()
+        return (
+            self.matchre(r'"([^"\n]|\\"|\\\\)*"') or
+            self.matchre(r"'([^'\n]|\\'|\\\\)*'")
+        )
 
     def parse_NEWLINE(self):
-        return self.parse_ENDMARKER() or self.matchre(r'\s*(?:\n|$)')
+        self.spaces()
+        return self.parse_ENDMARKER() or self.matchre(r'\s*\n')
 
     def parse_ENDMARKER(self):
+        self.spaces()
         return self.atend()
 
     def parse_SPACE(self):
         return self.matchre(r'\s*')
 
     def parse_TYPE_COMMENT(self):
-        self.matchre(r'\s*')
+        self.spaces()
         comment = self.matchre(r'#.*$')
         if comment:
             self.parse_NEWLINE()
             return Comment(comment=comment)
 
     def parse_AWAIT(self):
+        self.spaces()
         return self.match('await')
 
     def parse_INDENT(self):
@@ -91,8 +120,11 @@ class ParseContext:
     def error(self, msg):
         return Error(msg=msg, pos=self.pos, endpos=self.pos)
 
+    def void(self):
+        return Void(pos=self.pos, endpos=self.pos)
+
     def is_error(self, e):
-        return e and isinstance(e, Error)
+        return not e or isinstance(e, Error)
 
     def is_not_error(self, e):
         return not self.is_error(e)
@@ -107,12 +139,13 @@ class ParseContext:
         self.pos += n
 
     def spaces(self):
-        return self.matchre(r'(?:(?!\n)\s)*')
+        return self.matchre(r'(?:(?!\n)\s)+')
 
     def indent(self):
         return len(self.spaces())
 
     def match(self, token):
+        self.spaces()
         p = self.pos
         e = p + len(token)
 
@@ -128,6 +161,8 @@ class ParseContext:
             token = matched.group()
             self.move(len(token))
             return token
+        else:
+            return self.error(f'expecting "{pattern}"')
 
     def _scanre(self, pattern, offset=0):
         p = re.compile(pattern)
@@ -138,7 +173,7 @@ class ParseContext:
         while True:
             e = f()
             if self.is_error(e):
-                return e
+                break
             elif e:
                 result.append(e)
             else:
@@ -149,10 +184,12 @@ class ParseContext:
         e = f()
         if self.is_error(e):
             return e
-        else:
+        elif e:
             return [e] + self.closure(f)
+        else:
+            return []
 
-    def gather(self, *args):
+    def allof(self, *args):
         result = []
         for f in args:
             e = f()
@@ -161,5 +198,17 @@ class ParseContext:
             elif e:
                 result.append(e)
             else:
-                break
+               continue
+        if len(result) == 1:
+            return result[0]
         return result
+
+    def oneof(self, *args):
+        for f in args:
+            e = f()
+            if self.is_error(e):
+                continue
+            elif e:
+                return e
+            else:
+                continue

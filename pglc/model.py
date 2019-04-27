@@ -39,6 +39,11 @@ class Error(_Node):
 
 
 @dataclass
+class Void(_Node):
+    def __bool__(self):
+        return True
+
+@dataclass
 class Indent(_Node):
     level: int
 
@@ -89,7 +94,7 @@ class Seq(_Node):
     def genpython(self):
         seq = ',\n'.join(f'lambda: {e.genpython()}' for e in self.seq)
         return trim('''
-            self.gather(
+            self.allof(
             {seq}
             )''').format(seq=indent(seq))
 
@@ -99,30 +104,40 @@ class Choice(_Node):
     options: List[Exp]
 
     def genpython(self):
-        options = ' or\n'.join(trim(o.genpython()) for o in self.options)
+        options = ',\n'.join(f'lambda: {o.genpython()}' for o in self.options)
         return trim('''
-            (
-            {options} or
-                self.error("Unexpected input")
-            )''').format(options=indent(options))
+            self.oneof(
+            {options},
+            )
+            ''').format(options=indent(options))
 
 
 @dataclass
 class Optional(_HasExp):
     def genpython(self):
-        return trim(f'{self.exp.genpython()} or ()')
+        return trim(f'{self.exp.genpython()} or self.void()')
 
 
 @dataclass
 class Closure(_HasExp):
     def genpython(self):
-        return f'self.closure(lambda: {self.exp.genpython()})'
+        return trim('''
+            self.closure(
+                lambda: (
+            {exp}
+                )
+            )''').format(exp=indent(self.exp.genpython(), 2))
 
 
 @dataclass
 class PositiveClosure(_HasExp):
     def genpython(self):
-        return f'self.closureplus(lambda: {self.exp.genpython()})'
+        return trim('''
+            self.closureplus(
+                lambda: (
+            {exp}
+                )
+            )''').format(exp=indent(self.exp.genpython(), 2))
 
 
 @dataclass
@@ -132,8 +147,10 @@ class Rule(_HasExp):
     def genpython(self):
         return trim('''
             def parse_{name}(self):
+                print('{name}', '>>>', '"%s"' % self.text[self.pos: self.pos + 20])
+                self.spaces()
             {exp}
-                # print('{name}', result)
+                print('{name}', result, '"%s"' % self.text[self.pos: self.pos + 20])
                 return result
         ''').format(
             name=self.name,
@@ -184,5 +201,5 @@ class Grammar(_Node):
             
         ''').format(rules=indent(rules))
 
-        compile(result, '<text>', mode='exec')
+        # compile(result, '<text>', mode='exec')
         return result
