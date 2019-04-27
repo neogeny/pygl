@@ -3,6 +3,7 @@ from typing import List
 
 from .util import asjson, trim, trimind, indent
 
+
 @dataclass
 class _Node:
     pos: int
@@ -27,6 +28,26 @@ class _Node:
                 if not name.startswith('_')
             }
         }
+
+
+@dataclass
+class Error(_Node)
+    msg : str
+
+
+@dataclass
+class Indent(_Node)
+    level: int
+
+
+@dataclass
+class Dedent(_Node)
+    level: int
+
+
+@dataclass
+class Comment(_Node)
+    comment: str
 
 
 @dataclass
