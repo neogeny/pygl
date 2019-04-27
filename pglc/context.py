@@ -1,5 +1,4 @@
 import re
-from itertools import takewhile, repeat
 from dataclasses import dataclass, field
 from typing import List
 

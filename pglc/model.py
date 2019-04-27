@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from .util import asjson, trim, trimind, indent
+from .util import asjson, trim, indent
 
 
 @dataclass(repr=True)
@@ -133,7 +133,7 @@ class Rule(_HasExp):
         return trim('''
             def parse_{name}(self):
             {exp}
-                print('{name}', result)
+                # print('{name}', result)
                 return result
         ''').format(
             name=self.name,
