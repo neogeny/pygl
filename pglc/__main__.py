@@ -12,7 +12,8 @@ def main(trace=False):
         print(e)
         sys.exit(1)
 
-    print(json.dumps(asjson(model), indent=2))
+    # print(json.dumps(asjson(model), indent=2))
+    print(model.genpython())
 
 
 if __name__ == '__main__':

@@ -13,10 +13,14 @@ class PGLSemantics(object):
         return ast
 
     def choice(self, ast):  # noqa
+        if len(ast.choice) == 1:
+            return ast.choice[0]
         p, e = ast.parseinfo.pos, ast.parseinfo.endpos
         return Choice(options=ast.choice, pos=p, endpos=e)
 
     def sequence(self, ast):  # noqa
+        if len(ast.seq) == 1:
+            return ast.seq[0]
         p, e = ast.parseinfo.pos, ast.parseinfo.endpos
         return Seq(seq=ast.seq, pos=p, endpos=e)
 
@@ -49,4 +53,4 @@ class PGLSemantics(object):
 
     def token(self, ast):  # noqa
         p, e = ast.parseinfo.pos, ast.parseinfo.endpos
-        return Token(name=ast.token, pos=p, endpos=e)
+        return Token(token=ast.token, pos=p, endpos=e)
