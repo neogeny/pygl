@@ -1,11 +1,12 @@
 # This grammar describes the Grammar/Grammar grammar
 # used to describe the Python language
-@@grammar :: PGLC
+@@grammar :: PGL
 @@whitespace :: /(?s)[\s\r\n]+/
 @@eol_comments :: /#([^\n]*?)(?=\n)/
 @@left_recursion :: False
+@@parseinfo :: True
 
-grammar = @:{rule}+ $ ;
+grammar = rules:{rule}+ $ ;
 rule = name:name ':' exp:exp EOL ;
 exp = (choice | sequence | subexp) ;
 choice = choice:'|'.{sequence|subexp} ;
@@ -17,5 +18,5 @@ group = '(' ~ @:exp ')' ;
 optional = '[' ~ opt:exp ']' ~ ;
 ref = ref:name ;
 name = /\w+/ ;
-token = "'" ~ @:/([^'\n]|\\'|\\\\)*/ "'" ~ ;
+token = "'" ~ token:/([^'\n]|\\'|\\\\)*/ "'" ~ ;
 EOL = /\s*\n|$/ ;
