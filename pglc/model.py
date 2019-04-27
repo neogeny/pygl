@@ -4,7 +4,7 @@ from typing import List
 from .util import asjson, trim, trimind, indent
 
 
-@dataclass
+@dataclass(repr=True)
 class _Node:
     pos: int
     endpos: int
@@ -84,11 +84,11 @@ class Seq(_Node):
     seq: List[Exp]
 
     def genpython(self):
-        seq = ', \n'.join(e.genpython() for e in self.seq)
+        seq = ',\n'.join(f'lambda: {e.genpython()}' for e in self.seq)
         return trim('''
-            [
+            self.gather(
             {seq}
-            ]''').format(seq=indent(seq))
+            )''').format(seq=indent(seq))
 
 
 @dataclass
@@ -99,7 +99,8 @@ class Choice(_Node):
         options = ' or\n'.join(trim(o.genpython()) for o in self.options)
         return trim('''
             (
-            {options}
+            {options} or
+                self.error("Unexpected input")
             )''').format(options=indent(options))
 
 
@@ -173,10 +174,11 @@ class Grammar(_Node):
                         text = f.read()
                     
                     parser = PythonParser(text)    
-                    print(parser.parse(args.startrule))
+                    ast = parser.parse(args.startrule)
+                    print(type(ast), ast)
                 
             
         ''').format(rules=indent(rules))
 
-        # compile(result, '<text>', mode='exec')
+        compile(result, '<text>', mode='exec')
         return result

@@ -59,6 +59,9 @@ class ParseContext:
             self.parse_NEWLINE()
             return Comment(comment=comment)
 
+    def parse_AWAIT(self):
+        return self.match('await')
+
     def parse_INDENT(self):
         if not self.atbol():
             return self.error('Expecting INDENT')
@@ -88,6 +91,12 @@ class ParseContext:
 
     def error(self, msg):
         return Error(msg=msg, pos=self.pos, endpos=self.pos)
+
+    def is_error(self, e):
+        return not e or isinstance(e, Error)
+
+    def is_not_error(self, e):
+        return not self.is_error(e)
 
     def atend(self):
         return self.pos >= len(self.text)
@@ -122,12 +131,25 @@ class ParseContext:
             return token
 
     def _scanre(self, pattern, offset=0):
-        return re.match(pattern, self.text, self.pos + offset)
+        p = re.compile(pattern)
+        return p.match(self.text, self.pos + offset)
 
     def closure(self, f):
-        return list(takewhile(lambda e: e, (f() for _ in repeat(None))))
+        return list(takewhile(self.is_not_error, (f() for _ in repeat(None))))
 
     def closureplus(self, f):
         e = f()
-        if e:
-            return [e] + list(takewhile(lambda e: e, f))
+        if self.is_error(e):
+            return e
+        else:
+            return [e] + self.closure(f)
+
+    def gather(self, *args):
+        result = []
+        for f in args:
+            e = f()
+            if self.is_error(e):
+                return e
+            else:
+                result.append(e)
+        return result
