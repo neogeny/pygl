@@ -1,0 +1,21 @@
+# This grammar describes the Grammar/Grammar grammar
+# used to describe the Python language
+@@grammar :: PGLC
+@@whitespace :: /(?s)[\s\r\n]+/
+@@eol_comments :: /#([^\n]*?)(?=\n)/
+@@left_recursion :: False
+
+grammar = @:{rule}+ $ ;
+rule = name:name ':' exp:exp EOL ;
+exp = (choice | sequence | subexp) ;
+choice = choice:'|'.{sequence|subexp} ;
+sequence = seq+:subexp {seq+:subexp}+ ;
+subexp = closure | atom ;
+closure = closure:atom ctype:('*' | '+') ~  ;
+atom = !(name ':') (group | optional | ref | token) ;
+group = '(' ~ @:exp ')' ;
+optional = '[' ~ opt:exp ']' ~ ;
+ref = ref:name ;
+name = /\w+/ ;
+token = "'" ~ @:/([^'\n]|\\'|\\\\)*/ "'" ~ ;
+EOL = /\s*\n|$/ ;
