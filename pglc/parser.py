@@ -14,6 +14,7 @@ def pgl_parser(trace=False):
         trace=trace,
     )
 
+
 def python_grammar_model(trace=False):
     python_grammar = grammars.load_python_grammar()
     return pgl_parser().parse(python_grammar, trace=trace)

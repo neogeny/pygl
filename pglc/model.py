@@ -4,7 +4,7 @@ from typing import List
 from .util import asjson, trim, indent
 
 
-@dataclass(repr=True)
+@dataclass(repr=False)
 class _Node:
     pos: int
     endpos: int
@@ -29,6 +29,9 @@ class _Node:
             }
         }
 
+    def __repr__(self):
+        return '<?>'
+
 
 @dataclass
 class Error(_Node):
@@ -42,6 +45,7 @@ class Error(_Node):
 class Void(_Node):
     def __bool__(self):
         return True
+
 
 @dataclass
 class Indent(_Node):
@@ -67,10 +71,16 @@ class Exp(_Node):
 class _HasExp(_Node):
     exp: Exp
 
+    def __repr__(self):
+        return repr(self.exp)
+
 
 @dataclass
 class _Name(_Node):
     name: str
+
+    def __repr__(self):
+        return self.name
 
 
 @dataclass
@@ -80,11 +90,17 @@ class Token(_Node):
     def genpython(self):
         return f'self.match("{self.token}")'
 
+    def __repr__(self):
+        return repr(self.token)
+
 
 @dataclass
 class Ref(_Name):
     def genpython(self):
         return f'self.parse_{self.name}()'
+
+    def __repr__(self):
+        return self.name.lower()
 
 
 @dataclass
@@ -97,6 +113,9 @@ class Seq(_Node):
             self.allof(
             {seq}
             )''').format(seq=indent(seq))
+
+    def __repr__(self):
+        return ' '.join(repr(e) for e in self.seq)
 
 
 @dataclass
@@ -111,11 +130,21 @@ class Choice(_Node):
             )
             ''').format(options=indent(options))
 
+    def __repr__(self):
+        s = ' | ' .join(repr(o) for o in self.options)
+        if len(s) <= 80:
+            return s
+        else:
+            return '| ' + '\n| ' .join(repr(o) for o in self.options)
+
 
 @dataclass
 class Optional(_HasExp):
     def genpython(self):
         return trim(f'{self.exp.genpython()} or self.void()')
+
+    def __repr__(self):
+        return f'[{repr(self.exp)}]'
 
 
 @dataclass
@@ -128,6 +157,9 @@ class Closure(_HasExp):
                 )
             )''').format(exp=indent(self.exp.genpython(), 2))
 
+    def __repr__(self):
+        return '{%s}*' % repr(self.exp)
+
 
 @dataclass
 class PositiveClosure(_HasExp):
@@ -138,6 +170,9 @@ class PositiveClosure(_HasExp):
             {exp}
                 )
             )''').format(exp=indent(self.exp.genpython(), 2))
+
+    def __repr__(self):
+        return '{%s}+' % repr(self.exp)
 
 
 @dataclass
@@ -156,6 +191,17 @@ class Rule(_HasExp):
             name=self.name,
             exp=indent(f'result = {self.exp.genpython()}')
         )
+
+    def __repr__(self):
+        return trim(r'''
+            {name}
+                =
+            {exp}
+                ;
+            ''').format(
+                name=self.name,
+                exp=indent(repr(self.exp)),
+            )
 
 
 @dataclass
@@ -203,3 +249,15 @@ class Grammar(_Node):
 
         # compile(result, '<text>', mode='exec')
         return result
+
+    def __repr__(self):
+        return trim(r'''
+            @@grammar :: Python
+            @@whitespace :: /(?:(?!\n)\s)+/
+            @@left_recursion :: False
+            @@parseinfo :: True
+            
+            {rules}
+            ''').format(
+                rules='\n\n'.join(repr(r) for r in self.rules)
+            )
