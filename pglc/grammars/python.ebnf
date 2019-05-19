@@ -65,7 +65,7 @@ async_funcdef
 
 funcdef
     =
-    'def' name parameters ['->' test] ':' [TYPE_COMMENT] func_body_suite
+    'def' ~ name parameters ['->' test] ':' [TYPE_COMMENT] func_body_suite
     ;
 
 
@@ -87,7 +87,7 @@ typedargslist
 
 tfpdef
     =
-    name [':' test]
+    name [':' ~ test]
     ;
 
 
@@ -108,7 +108,7 @@ vfpdef
 
 stmt
     =
-    simple_stmt | compound_stmt
+    compound_stmt | simple_stmt
     ;
 
 
@@ -133,9 +133,12 @@ small_stmt
 
 expr_stmt
     =
-    testlist_star_expr (| annassign
-    | augassign (yield_expr | testlist)
-    | [{'=' (yield_expr | testlist_star_expr)}+ [TYPE_COMMENT]])
+    testlist_star_expr
+    (
+          annassign
+        | augassign (yield_expr | testlist)
+        | [{'=' (yield_expr | testlist_star_expr)}+ [TYPE_COMMENT]]
+    )
     ;
 
 
@@ -352,7 +355,7 @@ except_clause
 
 suite
     =
-    simple_stmt | NEWLINE INDENT {stmt}+ DEDENT
+    NEWLINE ~ INDENT {stmt}+ DEDENT | simple_stmt
     ;
 
 
@@ -412,12 +415,12 @@ comparison
 
 comp_op
     =
-    | '<'
-    | '>'
     | '=='
     | '>='
     | '<='
     | '<>'
+    | '<'
+    | '>'
     | '!='
     | 'in'
     | 'not' 'in'
@@ -521,13 +524,13 @@ subscriptlist
 
 subscript
     =
-    test | [test] ':' [test] [sliceop]
+    [test] ':' ~ [test] [sliceop] | test
     ;
 
 
 sliceop
     =
-    ':' [test]
+    ':' ~ [test]
     ;
 
 
@@ -552,7 +555,7 @@ dictorsetmaker
 
 classdef
     =
-    'class' name ['(' [arglist] ')'] ':' suite
+    'class' ~ name ['(' [arglist] ')'] ':' suite
     ;
 
 
@@ -564,7 +567,11 @@ arglist
 
 argument
     =
-    (test [comp_for] | test ':=' test | test '=' test | '**' test | '*' test)
+    | test ':=' test
+    | test '=' test
+    | '**' test
+    | '*' test
+    | test [comp_for]
     ;
 
 
