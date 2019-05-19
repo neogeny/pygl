@@ -309,35 +309,35 @@ async_stmt
 
 if_stmt
     =
-    'if' ~ namedexpr_test ':' suite {'elif' namedexpr_test ':' suite}* ['else' ':' suite]
+    'if' ~ namedexpr_test ':' SUITE {'elif' namedexpr_test ':' SUITE}* ['else' ':' SUITE]
     ;
 
 
 while_stmt
     =
-    'while' ~ namedexpr_test ':' suite ['else' ':' suite]
+    'while' ~ namedexpr_test ':' SUITE ['else' ':' SUITE]
     ;
 
 
 for_stmt
     =
-    'for' ~ exprlist 'in' testlist ':' [TYPE_COMMENT] suite ['else' ':' suite]
+    'for' ~ exprlist 'in' testlist ':' [TYPE_COMMENT] SUITE ['else' ':' SUITE]
     ;
 
 
 try_stmt
     =
-    'try' ~ ':' suite
+    'try' ~ ':' SUITE
     (
-        {except_clause ~ ':' suite}+ ['else' ':' suite] ['finally' ':' suite]
-        | 'finally' ~ ':' suite
+        {except_clause ~ ':' SUITE}+ ['else' ':' SUITE] ['finally' ':' SUITE]
+        | 'finally' ~ ':' SUITE
     )
     ;
 
 
 with_stmt
     =
-    'with' ~ with_item {',' with_item}* ':' [TYPE_COMMENT] suite
+    'with' ~ with_item {',' with_item}* ':' [TYPE_COMMENT] SUITE
     ;
 
 
@@ -353,7 +353,7 @@ except_clause
     ;
 
 
-suite
+SUITE
     =
     NEWLINE ~ INDENT {stmt}+ DEDENT | simple_stmt
     ;
@@ -555,7 +555,7 @@ dictorsetmaker
 
 classdef
     =
-    'class' ~ name ['(' [arglist] ')'] ':' suite
+    'class' ~ name ['(' [arglist] ')'] ':' SUITE
     ;
 
 
