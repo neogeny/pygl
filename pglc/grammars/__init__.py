@@ -3,7 +3,7 @@ import pkg_resources
 
 PYTHON_GRAMMAR = 'Grammar'
 PGLC_GRAMMAR = 'pglc.ebnf'
-PYTHON_PEG_GRAMMAR = 'pglc.ebnf'
+PYTHON_PEG_GRAMMAR = 'python.ebnf'
 
 
 def load_grammar(name):
