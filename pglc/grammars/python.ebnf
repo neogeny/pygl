@@ -309,7 +309,9 @@ async_stmt
 
 if_stmt
     =
-    'if' ~ namedexpr_test ':' SUITE {'elif' namedexpr_test ':' SUITE}* ['else' ':' SUITE]
+    'if' ~ namedexpr_test ':' SUITE
+    {'elif' ~ namedexpr_test ':' SUITE}*
+    ['else' ~ ':' SUITE]
     ;
 
 
@@ -355,7 +357,7 @@ except_clause
 
 SUITE
     =
-    NEWLINE ~ INDENT {stmt}+ DEDENT | simple_stmt
+    NEWLINE INDENT stmt ~ {EQDENT stmt ~}* DEDENT | simple_stmt
     ;
 
 
@@ -715,9 +717,11 @@ string
 
 NEWLINE = ?'\s*\n' ;
 
-INDENT = ?'^\s*' ;
+INDENT = {NEWLINE}* @:?'^\s+' ;
 
-DEDENT = ?'\s*' ;
+DEDENT = () ;
+
+EQDENT = {NEWLINE}* @:?'^\s*' ;
 
 ENDMARKER = $ ;
 
