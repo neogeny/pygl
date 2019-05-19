@@ -29,7 +29,7 @@ single_input
 
 file_input
     =
-    {(NEWLINE | stmt)}* ENDMARKER
+    {NEWLINE | stmt}* ENDMARKER
     ;
 
 
@@ -77,10 +77,10 @@ parameters
 
 typedargslist
     =
-    (| tfpdef ['=' test] {(',' [TYPE_COMMENT] tfpdef ['=' test])}* (| TYPE_COMMENT
-    | [',' [TYPE_COMMENT] [| '*' [tfpdef] {(',' [TYPE_COMMENT] tfpdef ['=' test])}* (TYPE_COMMENT | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]])
+    (| tfpdef ['=' test] {',' [TYPE_COMMENT] tfpdef ['=' test]}* (| TYPE_COMMENT
+    | [',' [TYPE_COMMENT] [| '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}* (TYPE_COMMENT | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]])
     | '**' tfpdef [','] [TYPE_COMMENT]]])
-    | '*' [tfpdef] {(',' [TYPE_COMMENT] tfpdef ['=' test])}* (TYPE_COMMENT | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]])
+    | '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}* (TYPE_COMMENT | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]])
     | '**' tfpdef [','] [TYPE_COMMENT])
     ;
 
@@ -93,9 +93,9 @@ tfpdef
 
 varargslist
     =
-    (| vfpdef ['=' test] {(',' vfpdef ['=' test])}* [',' [| '*' [vfpdef] {(',' vfpdef ['=' test])}* [',' ['**' vfpdef [',']]]
+    (| vfpdef ['=' test] {',' vfpdef ['=' test]}* [',' [| '*' [vfpdef] {',' vfpdef ['=' test]}* [',' ['**' vfpdef [',']]]
     | '**' vfpdef [',']]]
-    | '*' [vfpdef] {(',' vfpdef ['=' test])}* [',' ['**' vfpdef [',']]]
+    | '*' [vfpdef] {',' vfpdef ['=' test]}* [',' ['**' vfpdef [',']]]
     | '**' vfpdef [','])
     ;
 
@@ -114,20 +114,20 @@ stmt
 
 simple_stmt
     =
-    small_stmt {(';' small_stmt)}* [';'] NEWLINE
+    small_stmt {';' small_stmt}* [';'] NEWLINE
     ;
 
 
 small_stmt
     =
-    (| expr_stmt
     | del_stmt
     | pass_stmt
     | flow_stmt
     | import_stmt
     | global_stmt
     | nonlocal_stmt
-    | assert_stmt)
+    | assert_stmt
+    | expr_stmt
     ;
 
 
@@ -135,7 +135,7 @@ expr_stmt
     =
     testlist_star_expr (| annassign
     | augassign (yield_expr | testlist)
-    | [{('=' (yield_expr | testlist_star_expr))}+ [TYPE_COMMENT]])
+    | [{'=' (yield_expr | testlist_star_expr)}+ [TYPE_COMMENT]])
     ;
 
 
@@ -147,7 +147,7 @@ annassign
 
 testlist_star_expr
     =
-    (test | star_expr) {(',' (test | star_expr))}* [',']
+    (test | star_expr) {',' (test | star_expr)}* [',']
     ;
 
 
@@ -171,13 +171,13 @@ augassign
 
 del_stmt
     =
-    'del' exprlist
+    'del' ~ exprlist
     ;
 
 
 pass_stmt
     =
-    'pass'
+    'pass' ~
     ;
 
 
@@ -189,36 +189,37 @@ flow_stmt
 
 break_stmt
     =
-    'break'
+    'break' ~
     ;
 
 
 continue_stmt
     =
-    'continue'
+    'continue' ~
     ;
 
 
 return_stmt
     =
-    'return' [testlist_star_expr]
+    'return' ~ [testlist_star_expr]
     ;
 
 
 yield_stmt
     =
-    yield_expr
+    yield_expr ~
     ;
 
 
 raise_stmt
     =
-    'raise' [test ['from' test]]
+    'raise' ~ [test ['from' ~ test]]
     ;
 
 
 import_stmt
     =
+    &('import' ~)
     import_name | import_from
     ;
 
@@ -231,49 +232,49 @@ import_name
 
 import_from
     =
-    ('from' ({('.' | '...')}* dotted_name | {('.' | '...')}+) 'import' ('*' | '(' import_as_names ')' | import_as_names))
+    ('from' ({'.' | '...'}* dotted_name | {'.' | '...'}+) 'import' ('*' | '(' import_as_names ')' | import_as_names))
     ;
 
 
 import_as_name
     =
-    name ['as' name]
+    name ['as' ~ name]
     ;
 
 
 dotted_as_name
     =
-    dotted_name ['as' name]
+    dotted_name ['as' ~ name]
     ;
 
 
 import_as_names
     =
-    import_as_name {(',' import_as_name)}* [',']
+    import_as_name {',' ~ import_as_name}* [',']
     ;
 
 
 dotted_as_names
     =
-    dotted_as_name {(',' dotted_as_name)}*
+    dotted_as_name {',' ~ dotted_as_name}*
     ;
 
 
 dotted_name
     =
-    name {('.' name)}*
+    name {'.' ~ name}*
     ;
 
 
 global_stmt
     =
-    'global' name {(',' name)}*
+    'global' ~ name {',' name}*
     ;
 
 
 nonlocal_stmt
     =
-    'nonlocal' name {(',' name)}*
+    'nonlocal' ~ name {',' ~ name}*
     ;
 
 
@@ -299,38 +300,41 @@ compound_stmt
 
 async_stmt
     =
-    'async' (funcdef | with_stmt | for_stmt)
+    'async' ~ (funcdef | with_stmt | for_stmt)
     ;
 
 
 if_stmt
     =
-    'if' namedexpr_test ':' suite {('elif' namedexpr_test ':' suite)}* ['else' ':' suite]
+    'if' ~ namedexpr_test ':' suite {'elif' namedexpr_test ':' suite}* ['else' ':' suite]
     ;
 
 
 while_stmt
     =
-    'while' namedexpr_test ':' suite ['else' ':' suite]
+    'while' ~ namedexpr_test ':' suite ['else' ':' suite]
     ;
 
 
 for_stmt
     =
-    'for' exprlist 'in' testlist ':' [TYPE_COMMENT] suite ['else' ':' suite]
+    'for' ~ exprlist 'in' testlist ':' [TYPE_COMMENT] suite ['else' ':' suite]
     ;
 
 
 try_stmt
     =
-    ('try' ':' suite (| {(except_clause ':' suite)}+ ['else' ':' suite] ['finally' ':' suite]
-    | 'finally' ':' suite))
+    'try' ~ ':' suite
+    (
+        {except_clause ~ ':' suite}+ ['else' ':' suite] ['finally' ':' suite]
+        | 'finally' ~ ':' suite
+    )
     ;
 
 
 with_stmt
     =
-    'with' with_item {(',' with_item)}* ':' [TYPE_COMMENT] suite
+    'with' ~ with_item {',' with_item}* ':' [TYPE_COMMENT] suite
     ;
 
 
@@ -342,7 +346,7 @@ with_item
 
 except_clause
     =
-    'except' [test ['as' name]]
+    'except' ~ [test ['as' name]]
     ;
 
 
@@ -384,13 +388,13 @@ lambdef_nocond
 
 or_test
     =
-    and_test {('or' and_test)}*
+    and_test {'or' and_test}*
     ;
 
 
 and_test
     =
-    not_test {('and' not_test)}*
+    not_test {'and' not_test}*
     ;
 
 
@@ -402,7 +406,7 @@ not_test
 
 comparison
     =
-    expr {(comp_op expr)}*
+    expr {comp_op expr}*
     ;
 
 
@@ -430,37 +434,37 @@ star_expr
 
 expr
     =
-    xor_expr {('|' xor_expr)}*
+    xor_expr {'|' xor_expr}*
     ;
 
 
 xor_expr
     =
-    and_expr {('^' and_expr)}*
+    and_expr {'^' and_expr}*
     ;
 
 
 and_expr
     =
-    shift_expr {('&' shift_expr)}*
+    shift_expr {'&' shift_expr}*
     ;
 
 
 shift_expr
     =
-    arith_expr {(('<<' | '>>') arith_expr)}*
+    arith_expr {('<<' | '>>') arith_expr}*
     ;
 
 
 arith_expr
     =
-    term {(('+' | '-') term)}*
+    term {('+' | '-') term}*
     ;
 
 
 term
     =
-    factor {(('*' | '@' | '/' | '%' | '//') factor)}*
+    factor {('*' | '@' | '/' | '%' | '//') factor}*
     ;
 
 
@@ -499,7 +503,7 @@ atom
 
 testlist_comp
     =
-    (namedexpr_test | star_expr) (comp_for | {(',' (namedexpr_test | star_expr))}* [','])
+    (namedexpr_test | star_expr) (comp_for | {',' (namedexpr_test | star_expr)}* [','])
     ;
 
 
@@ -511,7 +515,7 @@ trailer
 
 subscriptlist
     =
-    subscript {(',' subscript)}* [',']
+    subscript {',' subscript}* [',']
     ;
 
 
@@ -529,20 +533,20 @@ sliceop
 
 exprlist
     =
-    (expr | star_expr) {(',' (expr | star_expr))}* [',']
+    (expr | star_expr) {',' (expr | star_expr)}* [',']
     ;
 
 
 testlist
     =
-    test {(',' test)}* [',']
+    test {',' test}* [',']
     ;
 
 
 dictorsetmaker
     =
-    (| ((test ':' test | '**' expr) (comp_for | {(',' (test ':' test | '**' expr))}* [',']))
-    | ((test | star_expr) (comp_for | {(',' (test | star_expr))}* [','])))
+    (| ((test ':' test | '**' expr) (comp_for | {',' (test ':' test | '**' expr)}* [',']))
+    | ((test | star_expr) (comp_for | {',' (test | star_expr)}* [','])))
     ;
 
 
@@ -554,7 +558,7 @@ classdef
 
 arglist
     =
-    argument {(',' argument)}* [',']
+    argument {',' argument}* [',']
     ;
 
 
@@ -626,8 +630,8 @@ func_type
 
 typelist
     =
-    (| test {(',' test)}* [',' ['*' [test] {(',' test)}* [',' '**' test] | '**' test]]
-    | '*' [test] {(',' test)}* [',' '**' test]
+    (| test {',' test}* [',' ['*' [test] {',' test}* [',' '**' test] | '**' test]]
+    | '*' [test] {',' test}* [',' '**' test]
     | '**' test)
     ;
 
