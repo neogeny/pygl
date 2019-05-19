@@ -21,7 +21,7 @@ def _stem(value):
 
 
 @pytest.mark.parametrize("filepath", cpython_python_sources, ids=_stem)
-def test_here(filepath):
+def test_filepath(filepath):
     assert filepath is not None
     try:
         with filepath.open('r') as f:
@@ -30,5 +30,8 @@ def test_here(filepath):
         pytest.skip('unsupported encoding')
 
     assert source is not None
-    parse(source, trace=True, colorize=True)
+    try:
+        parse(source, start='file_input', trace=True, colorize=True)
+    except Exception as e:
+        raise e from None
     pytest.fail('wanna see trace')

@@ -15,7 +15,9 @@
 
 start
     =
-    file_input | eval_input | single_input
+     &({NEWLINE}* stmt) ~ file_input
+    | eval_input
+    | single_input
     ;
 
 single_input
@@ -26,7 +28,7 @@ single_input
 
 file_input
     =
-    {NEWLINE | stmt}* ENDMARKER
+    {NEWLINE | stmt ~}* ENDMARKER
     ;
 
 
@@ -130,9 +132,12 @@ small_stmt
 
 expr_stmt
     =
-    testlist_star_expr | annassign
-    | augassign yield_expr | testlist
-    | [{'=' yield_expr | testlist_star_expr}+ [TYPE_COMMENT]]
+    testlist_star_expr
+    (
+          annassign
+        | augassign (yield_expr | testlist)
+        | [{'=' yield_expr | testlist_star_expr}+ [TYPE_COMMENT]]
+    )
     ;
 
 
@@ -168,19 +173,19 @@ augassign
 
 del_stmt
     =
-    'del' exprlist
+    'del' ~ exprlist
     ;
 
 
 pass_stmt
     =
-    'pass'
+    'pass' ~
     ;
 
 
 flow_stmt
     =
-    break_stmt | continue_stmt | return_stmt | raise_stmt | yield_stmt
+    (break_stmt | continue_stmt | return_stmt | raise_stmt | yield_stmt) ~
     ;
 
 
@@ -198,7 +203,7 @@ continue_stmt
 
 return_stmt
     =
-    'return' [testlist_star_expr]
+    'return' ~ [testlist_star_expr]
     ;
 
 
@@ -216,6 +221,7 @@ raise_stmt
 
 import_stmt
     =
+    (&'import' ~)
     import_name | import_from
     ;
 
@@ -264,19 +270,19 @@ dotted_name
 
 global_stmt
     =
-    'global' name {',' name}*
+    'global' ~ name {',' name}*
     ;
 
 
 nonlocal_stmt
     =
-    'nonlocal' name {',' name}*
+    'nonlocal' ~ name {',' name}*
     ;
 
 
 assert_stmt
     =
-    'assert' test [',' test]
+    'assert' ~ test [',' test]
     ;
 
 
@@ -302,44 +308,47 @@ async_stmt
 
 if_stmt
     =
-    'if' namedexpr_test ':' suite {'elif' namedexpr_test ':' suite}* ['else' ':' suite]
+    'if' ~ namedexpr_test ':' suite {'elif' namedexpr_test ':' suite}* ['else' ':' suite]
     ;
 
 
 while_stmt
     =
-    'while' namedexpr_test ':' suite ['else' ':' suite]
+    'while' ~ namedexpr_test ':' suite ['else' ':' suite]
     ;
 
 
 for_stmt
     =
-    'for' exprlist 'in' testlist ':' [TYPE_COMMENT] suite ['else' ':' suite]
+    'for' ~ exprlist 'in' testlist ':' [TYPE_COMMENT] suite ['else' ':' suite]
     ;
 
 
 try_stmt
     =
-    'try' ':' suite | {except_clause ':' suite}+ ['else' ':' suite] ['finally' ':' suite]
-    | 'finally' ':' suite
+    'try' ~ ':' suite
+    (
+      {except_clause ':' suite}+ ['else' ~ ':' suite] ['finally' ~ ':' suite]
+    | 'finally' ~ ':' suite
+    )
     ;
 
 
 with_stmt
     =
-    'with' with_item {',' with_item}* ':' [TYPE_COMMENT] suite
+    'with' ~ with_item {',' with_item}* ':' [TYPE_COMMENT] suite
     ;
 
 
 with_item
     =
-    test ['as' expr]
+    test ['as' ~ expr]
     ;
 
 
 except_clause
     =
-    'except' [test ['as' name]]
+    'except' ~ [test ['as' name]]
     ;
 
 
@@ -351,13 +360,13 @@ suite
 
 namedexpr_test
     =
-    test [':=' test]
+    test [':=' ~ test]
     ;
 
 
 test
     =
-    or_test ['if' or_test 'else' test] | lambdef
+    or_test ['if' ~ or_test 'else' test] | lambdef
     ;
 
 
@@ -369,37 +378,37 @@ test_nocond
 
 lambdef
     =
-    'lambda' [varargslist] ':' test
+    'lambda' ~ [varargslist] ':' test
     ;
 
 
 lambdef_nocond
     =
-    'lambda' [varargslist] ':' test_nocond
+    'lambda' ~ [varargslist] ':' test_nocond
     ;
 
 
 or_test
     =
-    and_test {'or' and_test}*
+    and_test {'or' ~ and_test}*
     ;
 
 
 and_test
     =
-    not_test {'and' not_test}*
+    not_test {'and' ~ not_test}*
     ;
 
 
 not_test
     =
-    'not' not_test | comparison
+    'not' ~ not_test | comparison
     ;
 
 
 comparison
     =
-    expr {comp_op expr}*
+    expr {comp_op ~ expr}*
     ;
 
 
@@ -421,76 +430,76 @@ comp_op
 
 star_expr
     =
-    '*' expr
+    '*' ~ expr
     ;
 
 
 expr
     =
-    xor_expr {'|' xor_expr}*
+    xor_expr {'|' ~ xor_expr}*
     ;
 
 
 xor_expr
     =
-    and_expr {'^' and_expr}*
+    and_expr {'^' ~ and_expr}*
     ;
 
 
 and_expr
     =
-    shift_expr {'&' shift_expr}*
+    shift_expr {'&' ~ shift_expr}*
     ;
 
 
 shift_expr
     =
-    arith_expr {'<<' | '>>' arith_expr}*
+    arith_expr {('<<' | '>>') ~ arith_expr}*
     ;
 
 
 arith_expr
     =
-    term {'+' | '-' term}*
+    term {('+' | '-') ~ term}*
     ;
 
 
 term
     =
-    factor {'*' | '@' | '/' | '%' | '//' factor}*
+    factor {('*' | '@' | '/' | '%' | '//') ~ factor}*
     ;
 
 
 factor
     =
-    '+' | '-' | '~' factor | power
+    ('+' | '-' | '~') ~ factor | power
     ;
 
 
 power
     =
-    atom_expr ['**' factor]
+    atom_expr ['**' ~ factor]
     ;
 
 
 atom_expr
     =
-    [await] atom {trailer}*
+    [await ~] atom {trailer}*
     ;
 
 
 atom
     =
-    | '(' [yield_expr | testlist_comp] ')'
-    | '[' [testlist_comp] ']'
-    | '{' [dictorsetmaker] '}'
-    | name
-    | number
+    | '(' ~ [yield_expr | testlist_comp] ')'
+    | '[' ~ [testlist_comp] ']'
+    | '{' ~ [dictorsetmaker] '}'
     | {string}+
     | '...'
     | 'None'
     | 'True'
     | 'False'
+    | number
+    | name
     ;
 
 
@@ -634,7 +643,7 @@ await = 'await' ;
 
 name
     =
-    ()
+    /[_]*\w[\w_]*/
     ;
 
 
@@ -696,9 +705,9 @@ floatnumber
 string
     =
     # still missing proper Unicode escapes
-    "'" value:/[^'\n\r\\]|\\\n|\\[abfnrtv"'\\]|\\[0-7]{1,3}|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/  "'"
+    "'" ~ /[^'\n\r\\]|\\\n|\\[abfnrtv"'\\]|\\[0-7]{1,3}|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/  "'"
     |
-    '"' value:/([^"\n\r\\]|\\\n|\\[abfnrtv"'\\]|\\[0-7]{1,3}|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*/ '"'
+    '"' ~ /([^"\n\r\\]|\\\n|\\[abfnrtv"'\\]|\\[0-7]{1,3}|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*/ '"'
     ;
 
 
