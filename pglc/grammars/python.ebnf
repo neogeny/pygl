@@ -31,6 +31,8 @@ single_input
 
 file_input
     =
+    empty
+    [string_stmt]
     {empty stmt empty}* empty ENDMARKER
     ;
 
@@ -130,6 +132,12 @@ small_stmt
     | nonlocal_stmt
     | assert_stmt
     | expr_stmt
+    ;
+
+
+string_stmt
+    =
+    string
     ;
 
 
