@@ -1,7 +1,7 @@
 from .model import (
     Grammar, Rule, Choice, Seq,
     Closure, PositiveClosure,
-    Optional,
+    Group, Optional,
     Ref, Token
 )
 
@@ -44,7 +44,8 @@ class PGLSemantics(object):
         return ast
 
     def group(self, ast):  # noqa
-        return ast
+        p, e = ast.parseinfo.pos, ast.parseinfo.endpos
+        return Group(exp=ast.opt, pos=p, endpos=e)
 
     def optional(self, ast):  # noqa
         p, e = ast.parseinfo.pos, ast.parseinfo.endpos

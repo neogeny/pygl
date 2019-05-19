@@ -139,6 +139,15 @@ class Choice(_Node):
 
 
 @dataclass
+class Group(_HasExp):
+    def genpython(self):
+        return trim(f'({self.exp.genpython()})')
+
+    def __repr__(self):
+        return f'({repr(self.exp)})'
+
+
+@dataclass
 class Optional(_HasExp):
     def genpython(self):
         return trim(f'{self.exp.genpython()} or self.void()')
