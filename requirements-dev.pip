@@ -1,4 +1,6 @@
 -r requirements.pip
 colorama
+flake8
 ipython
+pylint
 pytest
