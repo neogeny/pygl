@@ -25,3 +25,5 @@ def test_here(filepath):
             source = f.read()
     except UnicodeDecodeError:
         pytest.skip('unsupported encoding')
+
+    assert source is not None

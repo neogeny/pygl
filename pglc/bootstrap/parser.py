@@ -1,6 +1,6 @@
 import tatsu
 
-from . import grammars
+from pglc import grammars
 from .semantics import PGLSemantics
 
 

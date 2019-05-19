@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from .util import asjson, trim, indent
+from pglc.util import asjson, trim, indent
 
 
 @dataclass(repr=False)
@@ -35,7 +35,7 @@ class _Node:
 
 @dataclass
 class Error(_Node):
-    msg : str
+    msg: str
 
     def __bool__(self):
         return False
@@ -193,15 +193,17 @@ class Rule(_HasExp):
         )
 
     def __repr__(self):
-        return trim(r'''
+        return trim(
+            r'''
             {name}
                 =
             {exp}
                 ;
-            ''').format(
-                name=self.name,
-                exp=indent(repr(self.exp)),
-            )
+            '''
+        ).format(
+            name=self.name,
+            exp=indent(repr(self.exp)),
+        )
 
 
 @dataclass
@@ -251,13 +253,13 @@ class Grammar(_Node):
         return result
 
     def __repr__(self):
-        return trim(r'''
+        return trim(
+            r'''
             @@grammar :: Python
             @@whitespace :: /(?:(?!\n)\s)+/
             @@left_recursion :: False
             @@parseinfo :: True
 
             {rules}
-            ''').format(
-                rules='\n\n'.join(repr(r) for r in self.rules)
-            )
+            '''
+        ).format(rules='\n\n'.join(repr(r) for r in self.rules))

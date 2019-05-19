@@ -16,10 +16,7 @@ def asjson(obj, seen=None):
     elif isinstance(obj, Mapping):
         result = OrderedDict()
         for k, v in obj.items():
-            try:
-                result[asjson(k, seen)] = asjson(v, seen)
-            except TypeError:
-                raise
+            result[asjson(k, seen)] = asjson(v, seen)
         return result
     elif isinstance(obj, Iterable):
         return [asjson(e, seen) for e in obj]
@@ -47,11 +44,11 @@ def trim(text, tabwidth=4):
     f = 0
     for line in lines:
         if not line.strip():
-           continue
+            continue
         stripped = line.lstrip()
         indent = min(indent, len(line) - len(stripped))
     trimmed = (
-            [line[indent:].rstrip() for line in lines[f:]]
+        [line[indent:].rstrip() for line in lines[f:]]
     )
     i = 0
     while i < len(trimmed) and not trimmed[i].strip():

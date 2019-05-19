@@ -1,4 +1,10 @@
-from .model import *  # noqa
+from .model import (
+    Grammar, Rule, Choice, Seq,
+    Closure, PositiveClosure,
+    Optional,
+    Ref, Token
+)
+
 
 class PGLSemantics(object):
     def grammar(self, ast):

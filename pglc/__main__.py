@@ -1,8 +1,6 @@
 import sys
-import json
 
-from . import parser
-from .util import asjson
+from pglc.bootstrap import parser
 
 
 def main(trace=False):
@@ -12,9 +10,7 @@ def main(trace=False):
         print(e)
         sys.exit(1)
 
-    # print(json.dumps(asjson(model), indent=2))
-    # print(model.genpython())
-    print(parser.python_grammar_model())
+    print(model)
 
 
 if __name__ == '__main__':

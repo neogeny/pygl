@@ -1,6 +1,6 @@
 import re
 from keyword import iskeyword
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field  # noqa
 from typing import List
 
 from .model import Error, Void, Comment, Indent, Dedent
@@ -35,7 +35,7 @@ class ParseContext:
             return self.text[self.pos]
 
     def current_indent(self):
-        return self.indent_levels[-1] if self.indent_levels else 0
+        return self.indent_levels[-1] if self.indent_levels else 0  # pylint: disable=E1136
 
     def parse_ASYNC(self):
         return self.match('async')
@@ -198,7 +198,7 @@ class ParseContext:
             elif e:
                 result.append(e)
             else:
-               continue
+                continue
         if len(result) == 1:
             return result[0]
         return result
