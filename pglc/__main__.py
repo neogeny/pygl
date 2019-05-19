@@ -1,16 +1,8 @@
-import sys
-
-from pglc.bootstrap import parser
+from .bootstrap import bootstrap_python_peg_grammar
 
 
-def main(trace=False):
-    try:
-        model = parser.python_grammar_model(trace=trace)
-    except Exception as e:
-        print(e)
-        sys.exit(1)
-
-    print(model)
+def main():
+    bootstrap_python_peg_grammar(trace=False)
 
 
 if __name__ == '__main__':
