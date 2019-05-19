@@ -1,7 +1,13 @@
+import sys
 from dataclasses import dataclass, field
 from typing import List
 
 from tatsu.exceptions import FailedSemantics
+
+
+def debug(*args, **kwargs):
+    file = kwargs.pop('file', sys.stderr)
+    print(*args, file=file, **kwargs)
 
 
 @dataclass()
@@ -15,7 +21,7 @@ class PythonSemantics:
         return self.indent_levels[-1] if self.indent_levels else 0  # pylint: disable=E1136
 
     def INDENT(self, ast):
-        print('INDENT "%s"' % ast)
+        debug('INDENT "%s"' % ast, self.indent_levels)
         indent = len(ast.strip('\r\n'))
         prev = self.current_indent()
         if not indent or indent <= prev:
@@ -23,10 +29,13 @@ class PythonSemantics:
         self.indent_levels.append(indent)
 
     def DEDENT(self, ast):
+        debug('DEDENT ', self.indent_levels)
+        if not self.indent_levels:
+            self.error('Expecting DEDENT')
         self.indent_levels.pop()
 
     def EQDENT(self, ast):
-        print('EQDENT "%s"' % ast)
+        debug('EQDENT "%s"' % ast, self.indent_levels)
         indent = len(ast.strip('\r\n'))
         prev = self.current_indent()
         if indent != prev:

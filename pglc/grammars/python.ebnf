@@ -1,8 +1,8 @@
 @@grammar :: Python
 @@left_recursion :: False
 @@parseinfo :: True
-@@whitespace :: /(?:\s)+/
-@@eol_comments :: /\s*#.*$/
+@@whitespace :: /(?:(?!\n)\s)+/
+@@eol_comments :: /\s*#.*(\n|$)/
 
 @@keyword :: False      await      else       import     pass
 @@keyword :: None       break      except     in         raise
@@ -15,7 +15,7 @@
 
 start
     =
-     &({NEWLINE}* stmt) ~ file_input
+     &(EMPTY stmt) ~ file_input
     | eval_input
     | single_input
     ;
@@ -35,7 +35,7 @@ file_input
 
 eval_input
     =
-    testlist {NEWLINE}* ENDMARKER
+    testlist EMPTY ENDMARKER
     ;
 
 
@@ -150,7 +150,7 @@ annassign
 
 testlist_star_expr
     =
-    (test | star_expr) {',' (test | star_expr)}* [',']
+    (test | star_expr) {',' EMPTY (test | star_expr)}* [',']
     ;
 
 
@@ -310,8 +310,8 @@ async_stmt
 if_stmt
     =
     'if' ~ namedexpr_test ':' SUITE
-    {'elif' ~ namedexpr_test ':' SUITE}*
-    ['else' ~ ':' SUITE]
+    {EQDENT 'elif' ~ namedexpr_test ':' SUITE}*
+    [EQDENT 'else' ~ ':' SUITE]
     ;
 
 
@@ -357,7 +357,8 @@ except_clause
 
 SUITE
     =
-    NEWLINE INDENT stmt ~ {EQDENT stmt ~}* DEDENT | simple_stmt
+      {NEWLINE}+ INDENT stmt ~ {EQDENT stmt ~}* ~ DEDENT
+    | simple_stmt
     ;
 
 
@@ -411,7 +412,7 @@ not_test
 
 comparison
     =
-    expr {comp_op expr}*
+    expr {comp_op ~ expr}*
     ;
 
 
@@ -508,7 +509,10 @@ atom
 
 testlist_comp
     =
-    (namedexpr_test | star_expr) (comp_for | {',' (namedexpr_test | star_expr)}* [','])
+    (namedexpr_test | star_expr)
+    (
+          comp_for
+        | {',' EMPTY (namedexpr_test | star_expr)}* [','])
     ;
 
 
@@ -563,7 +567,7 @@ classdef
 
 arglist
     =
-    argument {',' argument}* [',']
+    EMPTY argument {',' EMPTY argument}* [',']
     ;
 
 
@@ -645,6 +649,7 @@ typelist
     ;
 
 
+@name
 name
     =
     /[_]*\w[\w_]*/
@@ -715,13 +720,18 @@ string
     ;
 
 
-NEWLINE = ?'\s*\n' ;
+NEWLINE = /(?:(?!\n)\s)*\n/;
 
-INDENT = {NEWLINE}* @:?'^\s+' ;
+EMPTY = /(?:(?:(?!\n)\s)*\n)*/ ;
 
-DEDENT = () ;
+@nomemo
+INDENT = /(?:(?:(?!\n)\s)*\n)*/  @:/^\s+/ ;
 
-EQDENT = {NEWLINE}* @:?'^\s*' ;
+@nomemo
+DEDENT = /(?:(?:(?!\n)\s)*\n)*/ @:();
+
+@nomemo
+EQDENT = /(?:(?:(?!\n)\s)*\n)*/ @:/^\s*/ ;
 
 ENDMARKER = $ ;
 

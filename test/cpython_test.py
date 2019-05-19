@@ -9,7 +9,6 @@ from pglc.settings import CPYTHON_PATH
 def _get_cpython_python_source():
     for pathname in CPYTHON_PATH.glob('**/*.py'):
         yield pathname
-        break
 
 
 cpython_python_sources = _get_cpython_python_source()
@@ -34,4 +33,3 @@ def test_filepath(filepath):
         parse(source, start='file_input', trace=True, colorize=True)
     except Exception as e:
         raise e from None
-    pytest.fail('wanna see trace')
