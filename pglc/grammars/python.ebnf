@@ -1,7 +1,7 @@
 @@grammar :: Python
 @@left_recursion :: False
 @@parseinfo :: True
-@@whitespace :: /(?:(?!\n)\s)+/
+@@whitespace :: /(?:\s)+/
 @@eol_comments :: /\s*#.*$/
 
 @@keyword :: False      await      else       import     pass
