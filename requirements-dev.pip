@@ -1,6 +1,7 @@
 -r requirements.pip
 colorama
 flake8
+git-pylint-commit-hook
 ipython
 mypy
 pylint
