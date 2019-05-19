@@ -13,6 +13,7 @@ def main():
         parser = python_parser()
     except Exception as e:
         print(e)
+        raise
         sys.exit(-1)
     print(parser)
 

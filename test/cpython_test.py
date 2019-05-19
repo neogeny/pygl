@@ -2,11 +2,14 @@ from pathlib import Path
 
 import pytest
 
+from pglc.pythonc import parse
 from pglc.settings import CPYTHON_PATH
 
 
 def _get_cpython_python_source():
-    yield from CPYTHON_PATH.glob('**/*.py')
+    for pathname in CPYTHON_PATH.glob('**/*.py'):
+        yield pathname
+        break
 
 
 cpython_python_sources = _get_cpython_python_source()
@@ -27,3 +30,4 @@ def test_here(filepath):
         pytest.skip('unsupported encoding')
 
     assert source is not None
+    parse(source)
