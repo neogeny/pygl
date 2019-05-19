@@ -1,3 +1,9 @@
+# local copy of TatSu
+tatsu
+
+# local settings
+**/settings/local*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -106,7 +112,3 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-
-
-# local copy of TatSu
-tatsu

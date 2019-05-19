@@ -213,15 +213,15 @@ class Grammar(_Node):
         result = trim('''
             import argparse
             from pglc.context import ParseContext
-            
+
             class PythonParser(ParseContext):
             {rules}
-                
-                
+
+
             if __name__ == '__main__':
                 argp = argparse.ArgumentParser(description="Simple parser for Python")
                 addarg = argp.add_argument
-                
+
                 addarg('file',
                        metavar="FILE",
                        help="the input file to parse or '-' for standard input",
@@ -235,16 +235,16 @@ class Grammar(_Node):
                        default=None,
                 )
                 args = argp.parse_args()
-               
+
                 if args.file:
                     with open(args.file) as f:
                         text = f.read()
-                    
-                    parser = PythonParser(text)    
+
+                    parser = PythonParser(text)
                     ast = parser.parse(args.startrule)
                     print(type(ast), ast)
-                
-            
+
+
         ''').format(rules=indent(rules))
 
         # compile(result, '<text>', mode='exec')
@@ -256,7 +256,7 @@ class Grammar(_Node):
             @@whitespace :: /(?:(?!\n)\s)+/
             @@left_recursion :: False
             @@parseinfo :: True
-            
+
             {rules}
             ''').format(
                 rules='\n\n'.join(repr(r) for r in self.rules)
