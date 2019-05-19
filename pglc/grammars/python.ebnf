@@ -3,27 +3,33 @@
 @@left_recursion :: False
 @@parseinfo :: True
 
+
+start
+    =
+    (single_input | file_input | eval_input)
+    ;
+
 single_input
     =
-    newline | simple_stmt | compound_stmt newline
+    NEWLINE | simple_stmt | compound_stmt NEWLINE
     ;
 
 
 file_input
     =
-    {newline | stmt}* endmarker
+    {NEWLINE | stmt}* ENDMARKER
     ;
 
 
 eval_input
     =
-    testlist {newline}* endmarker
+    testlist {NEWLINE}* ENDMARKER
     ;
 
 
 decorator
     =
-    '@' dotted_name ['(' [arglist] ')'] newline
+    '@' dotted_name ['(' [arglist] ')'] NEWLINE
     ;
 
 
@@ -47,7 +53,7 @@ async_funcdef
 
 funcdef
     =
-    'def' name parameters ['->' test] ':' [type_comment] func_body_suite
+    'def' name parameters ['->' test] ':' [TYPE_COMMENT] func_body_suite
     ;
 
 
@@ -59,11 +65,11 @@ parameters
 
 typedargslist
     =
-    | tfpdef ['=' test] {',' [type_comment] tfpdef ['=' test]}* | type_comment
-    | [',' [type_comment] [| '*' [tfpdef] {',' [type_comment] tfpdef ['=' test]}* type_comment | [',' [type_comment] ['**' tfpdef [','] [type_comment]]]
-    | '**' tfpdef [','] [type_comment]]]
-    | '*' [tfpdef] {',' [type_comment] tfpdef ['=' test]}* type_comment | [',' [type_comment] ['**' tfpdef [','] [type_comment]]]
-    | '**' tfpdef [','] [type_comment]
+    | tfpdef ['=' test] {',' [TYPE_COMMENT] tfpdef ['=' test]}* | TYPE_COMMENT
+    | [',' [TYPE_COMMENT] [| '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}* TYPE_COMMENT | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]]
+    | '**' tfpdef [','] [TYPE_COMMENT]]]
+    | '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}* TYPE_COMMENT | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]]
+    | '**' tfpdef [','] [TYPE_COMMENT]
     ;
 
 
@@ -96,7 +102,7 @@ stmt
 
 simple_stmt
     =
-    small_stmt {';' small_stmt}* [';'] newline
+    small_stmt {';' small_stmt}* [';'] NEWLINE
     ;
 
 
@@ -117,7 +123,7 @@ expr_stmt
     =
     testlist_star_expr | annassign
     | augassign yield_expr | testlist
-    | [{'=' yield_expr | testlist_star_expr}+ [type_comment]]
+    | [{'=' yield_expr | testlist_star_expr}+ [TYPE_COMMENT]]
     ;
 
 
@@ -299,7 +305,7 @@ while_stmt
 
 for_stmt
     =
-    'for' exprlist 'in' testlist ':' [type_comment] suite ['else' ':' suite]
+    'for' exprlist 'in' testlist ':' [TYPE_COMMENT] suite ['else' ':' suite]
     ;
 
 
@@ -312,7 +318,7 @@ try_stmt
 
 with_stmt
     =
-    'with' with_item {',' with_item}* ':' [type_comment] suite
+    'with' with_item {',' with_item}* ':' [TYPE_COMMENT] suite
     ;
 
 
@@ -330,7 +336,7 @@ except_clause
 
 suite
     =
-    simple_stmt | newline indent {stmt}+ dedent
+    simple_stmt | NEWLINE INDENT {stmt}+ DEDENT
     ;
 
 
@@ -590,13 +596,13 @@ yield_arg
 
 func_body_suite
     =
-    simple_stmt | newline [type_comment newline] indent {stmt}+ dedent
+    simple_stmt | NEWLINE [TYPE_COMMENT NEWLINE] INDENT {stmt}+ DEDENT
     ;
 
 
 func_type_input
     =
-    func_type {newline}* endmarker
+    func_type {NEWLINE}* ENDMARKER
     ;
 
 
@@ -613,4 +619,90 @@ typelist
     | '**' test
     ;
 
+async = 'async' ;
+await = 'await' ;
+
+
+name
+    =
+    ()
+    ;
+
+
+number
+    =
+    floatnumber
+    | integer
+    ;
+
+
+integer
+    =
+    bininteger | octinteger | hexinteger | decinteger
+    ;
+
+
+decinteger
+    =
+    #  nonzerodigit (["_"] digit)* | "0"+ (["_"] "0")*
+    /[1-9]([_]?\d)*|0+([_]?0)*/
+    ;
+
+
+bininteger
+    =
+    # "0" ("b" | "B") (["_"] bindigit)+
+    /0[bB]([_]?[01])+/
+    ;
+
+
+octinteger
+    =
+    # "0" ("o" | "O") (["_"] octdigit)+
+    /0[oO]([_]?[0-7])+/
+    ;
+
+
+hexinteger
+    =
+    # "0" ("x" | "X") (["_"] hexdigit)+
+    /0[xX]([_]?[\da-fA-F])+/
+    ;
+
+
+floatnumber
+    =
+    # floatnumber   ::=  pointfloat | exponentfloat
+    # pointfloat    ::=  [digitpart] fraction | digitpart "."
+    # exponentfloat ::=  (digitpart | pointfloat) exponent
+    # digitpart     ::=  digit (["_"] digit)*
+    # fraction      ::=  "." digitpart
+    # exponent      ::=  ("e" | "E") ["+" | "-"] digitpart
+    | /[.]\d+([eE][-+]?\d([_]?\d)*)?/
+    | /\d([_]?\d)*[.]\d*([eE][-+]?\d([_]?\d)*)?/
+    | /\d([_]?\d)*[eE][-+]?\d([_]?\d)*/
+    ;
+
+
+string
+    =
+    # still missing proper Unicode escapes
+    "'" value:/[^'\n\r\\]|\\\n|\\[abfnrtv"'\\]|\\[0-7]{1,3}|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/  "'"
+    |
+    '"' value:/([^"\n\r\\]|\\\n|\\[abfnrtv"'\\]|\\[0-7]{1,3}|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4})*/ '"'
+    ;
+
+
+NEWLINE = ?'\s*\n' ;
+
+INDENT = ?'^\s*' ;
+
+DEDENT = ?'\s*' ;
+
+ENDMARKER = $ ;
+
+TYPE_COMMENT
+    =
+    /\s*#\s*type:.*$/
+    ;
 
