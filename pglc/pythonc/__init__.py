@@ -15,5 +15,8 @@ def python_parser():
     return __parser
 
 
-def parse(source):
-    return python_parser().parse(source, semantics=PythonSemantics())
+def parse(source, **kwargs):
+    semantics = kwargs.pop('semantics', None)
+    if semantics is None:
+        semantics = PythonSemantics()
+    return python_parser().parse(source, semantics=semantics, **kwargs)

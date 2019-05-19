@@ -30,4 +30,5 @@ def test_here(filepath):
         pytest.skip('unsupported encoding')
 
     assert source is not None
-    parse(source)
+    parse(source, trace=True, colorize=True)
+    pytest.fail('wanna see trace')

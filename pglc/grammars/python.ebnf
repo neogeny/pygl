@@ -1,12 +1,21 @@
 @@grammar :: Python
-@@whitespace :: /(?:(?!\n)\s)+/
 @@left_recursion :: False
 @@parseinfo :: True
+@@whitespace :: /(?:(?!\n)\s)+/
+@@eol_comments :: /\s*#.*$/
+
+@@keyword :: False      await      else       import     pass
+@@keyword :: None       break      except     in         raise
+@@keyword :: True       class      finally    is         return
+@@keyword :: and        continue   for        lambda     try
+@@keyword :: as         def        from       nonlocal   while
+@@keyword :: assert     del        global     not        with
+@@keyword :: async      elif       if         or         yield
 
 
 start
     =
-    (single_input | file_input | eval_input)
+    file_input | eval_input | single_input
     ;
 
 single_input
@@ -108,7 +117,6 @@ simple_stmt
 
 small_stmt
     =
-    | expr_stmt
     | del_stmt
     | pass_stmt
     | flow_stmt
@@ -116,6 +124,7 @@ small_stmt
     | global_stmt
     | nonlocal_stmt
     | assert_stmt
+    | expr_stmt
     ;
 
 
