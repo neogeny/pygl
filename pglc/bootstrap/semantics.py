@@ -45,7 +45,7 @@ class PGLSemantics(object):
 
     def group(self, ast):  # noqa
         p, e = ast.parseinfo.pos, ast.parseinfo.endpos
-        return Group(exp=ast.opt, pos=p, endpos=e)
+        return Group(exp=ast.exp, pos=p, endpos=e)
 
     def optional(self, ast):  # noqa
         p, e = ast.parseinfo.pos, ast.parseinfo.endpos

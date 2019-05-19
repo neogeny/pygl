@@ -9,6 +9,9 @@ def _pending_cmdline_options():
 
 
 def main():
+    parser = bootstrap_python_peg_grammar(trace=False)
+    print(parser)
+    return
     try:
         parser = python_parser()
     except Exception as e:

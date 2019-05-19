@@ -100,7 +100,7 @@ class Ref(_Name):
         return f'self.parse_{self.name}()'
 
     def __repr__(self):
-        return self.name.lower()
+        return self.name
 
 
 @dataclass
