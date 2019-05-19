@@ -7,8 +7,10 @@ from pglc.settings import CPYTHON_PATH
 
 
 def _get_cpython_python_source():
-    for pathname in CPYTHON_PATH.glob('**/*.py'):
-        yield pathname
+    def filesize(p):
+        return p.stat().st_size
+
+    yield from sorted(CPYTHON_PATH.glob('**/*.py'), key=filesize)
 
 
 cpython_python_sources = _get_cpython_python_source()
