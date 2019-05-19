@@ -15,9 +15,11 @@
 
 start
     =
-     &(empty stmt) ~ file_input
+    (
+      file_input
     | eval_input
     | single_input
+    ) $
     ;
 
 
@@ -29,7 +31,7 @@ single_input
 
 file_input
     =
-    {empty stmt empty}* ENDMARKER
+    {empty stmt empty}* empty ENDMARKER
     ;
 
 
@@ -726,7 +728,7 @@ string
     ;
 
 
-NEWLINE = /(?:(?!\n)\s)*\n/;
+NEWLINE = $ | /(?:(?!\n)\s)*\n/;
 
 empty = /(?:(?:(?!\n)\s)*\n)*/ ;
 

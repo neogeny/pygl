@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 import pytest
@@ -10,7 +11,13 @@ def _get_cpython_python_source():
     def filesize(p):
         return p.stat().st_size
 
-    yield from sorted(CPYTHON_PATH.glob('**/*.py'), key=filesize)
+    return sorted(
+        (
+            f for f in CPYTHON_PATH.glob('**/*.py')
+            if '/test' not in str(f)
+        ),
+        key=filesize
+    )
 
 
 cpython_python_sources = _get_cpython_python_source()
@@ -21,16 +28,20 @@ def _stem(value):
         return str(value.relative_to(CPYTHON_PATH))
 
 
+def load_filepath(filepath):
+    try:
+        with filepath.open('rt') as f:
+            return f.read()
+    except UnicodeDecodeError:
+        with filepath.open('rb') as f:
+            return f.read()
+
+
 @pytest.mark.parametrize("filepath", cpython_python_sources, ids=_stem)
 def test_filepath(filepath):
-    assert filepath is not None
-    try:
-        with filepath.open('r') as f:
-            source = f.read()
-    except UnicodeDecodeError:
-        pytest.skip('unsupported encoding')
-
+    source = load_filepath(filepath)
     assert source is not None
+
     try:
         parse(source, start='file_input', trace=True, colorize=True)
     except Exception as e:

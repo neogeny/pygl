@@ -1,3 +1,5 @@
+import re
+
 import tatsu
 
 from ..grammars import load_python_peg_grammar
@@ -16,7 +18,14 @@ def python_parser():
 
 
 def parse(source, **kwargs):
+    if isinstance(source, bytes):
+        m = re.search(rb'^\s*#.*coding:\s(\S*)', source)
+        encoding = m.group(1) if m else 'utf-8'
+        source = source.decode(encoding=encoding)
+
     semantics = kwargs.pop('semantics', None)
     if semantics is None:
         semantics = PythonSemantics()
-    return python_parser().parse(source, semantics=semantics, **kwargs)
+    parser = python_parser()\
+
+    parser.parse(source, semantics=semantics, **kwargs)
