@@ -6,4 +6,5 @@ ipython
 mypy
 pylint
 pytest
+pytest-parallel
 tox
