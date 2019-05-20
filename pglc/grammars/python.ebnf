@@ -2,7 +2,7 @@
 @@left_recursion :: False
 @@parseinfo :: True
 @@whitespace :: /(?:(?!\n)\s)+/
-@@eol_comments :: /\s*#.*(\n|$)/
+@@eol_comments :: /(?ms)\s*#.*(\n|$)/
 
 @@keyword :: False      await      else       import     pass
 @@keyword :: None       break      except     in         raise
