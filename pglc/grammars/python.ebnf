@@ -31,16 +31,16 @@ single_input
 
 file_input
     =
-    empty
+    _
     [string_stmt]
-    {empty import_stmt empty}*
-    {empty stmt empty}* empty ENDMARKER
+    {_ import_stmt _}*
+    {_ stmt _}* _ ENDMARKER
     ;
 
 
 eval_input
     =
-    testlist empty ENDMARKER
+    testlist _ ENDMARKER
     ;
 
 
@@ -161,7 +161,7 @@ annassign
 
 testlist_star_expr
     =
-    (test | star_expr) {',' empty (test | star_expr)}* [',']
+    (test | star_expr) {',' _ (test | star_expr)}* [',']
     ;
 
 
@@ -505,9 +505,9 @@ atom_expr
 
 atom
     =
-    ( '(' [yield_expr | testlist_comp] ')'
-    | '[' [testlist_comp] ']'
-    | '{' [dictorsetmaker] '}'
+    ( '(' _ [yield_expr | testlist_comp] _ ')'
+    | '[' _ [testlist_comp] _ ']'
+    | '{' _ [dictorsetmaker] _ '}'
     | {string}+
     | number
     | '...'
@@ -523,7 +523,7 @@ testlist_comp
     (namedexpr_test | star_expr)
     (
           comp_for
-        | {',' empty (namedexpr_test | star_expr) empty}* [','])
+        | {',' _ (namedexpr_test | star_expr) _}* [','])
     ;
 
 
@@ -535,7 +535,7 @@ trailer
 
 subscriptlist
     =
-    subscript {','  empty subscript empty }* [',']
+    subscript {','  _ subscript _ }* [',']
     ;
 
 
@@ -565,8 +565,11 @@ testlist
 
 dictorsetmaker
     =
-    (| ((test ':' test | '**' expr) (comp_for | {',' (test ':' test | '**' expr)}* [',']))
-    | ((test | star_expr) (comp_for | {',' (test | star_expr)}* [','])))
+        (test ':' test | '**' expr)
+        (comp_for | {',' _ (test ':' test | '**' expr) ~}* [','])
+    |
+        (test | star_expr)
+        (comp_for | {','  _ (test | star_expr) ~ }* [','])
     ;
 
 
@@ -578,7 +581,7 @@ classdef
 
 arglist
     =
-    empty argument {',' empty argument}* [',']
+    _ argument {',' _ argument}* [',']
     ;
 
 
@@ -744,7 +747,7 @@ STRING
 
 NEWLINE = $ | /(?:(?!\n)\s)*\n/;
 
-empty = /(?:(?:(?!\n)\s)*\n)*/ ;
+_ = /(?:(?:(?!\n)\s)*\n)*/ ;
 
 @nomemo
 INDENT = /(?:(?:(?!\n)\s)*\n)*/  @:/^\s+/ ;
