@@ -7,7 +7,26 @@ The main objective of the project is to produce a PEG grammar for Python, so dif
 
 The strategy used in **pglc** is explained on [this topic](https://discuss.python.org/t/preparing-for-new-python-parsing/1550/38) on [Python's Discourse site].
 
-**pglc** is a tool that takes the Python grammar (`Grammar/Grammar`) in the source and generates a Python->AST translator.
+## Project Plan
+
+Currently, the TatSu PEG grammar for Python is being debugged against the Python source code in in the [CPython Git repository](https://github.com/python/cpython) (~ 787 KLOC).
+
+These are the steps of the plan:
+
+1. ✓ Create a TatSu parser to parse `Grammar/Grammar`
+1. ✓ Parse the `Grammar/Grammar` using the above parser
+1. ✓ Generate a draft PEG grammar for Python from the above using TatSu
+1. ⇒ Debug the PEG grammar using TatSu (PEG semantics require rule-choice ordering, etc.)
+1. Generate AST from Python source using the above (at this point, the grammar is debugged and the parser complete)
+1. Measure parser performance (it should be within the expected Python vs C range). Pass, or abort
+1. Automatically generate a [PackCC](https://github.com/apalala/packcc) grammar for Python from the above
+1. Debug the PackCC grammar
+1. Ditch TatSu
+1. Instrument the PackCC grammar to generate AST (as TatSu, PackCC allows naming parse subexpressions)
+1. Measure, and pass or abort
+1. Customize PackCC and the PackCC grammar so it is `libpython` compatible (PackCC provides for this).
+1. Add a node visitor to translate the PackCC grammar to "documentation grammar".
+1. The current Python parser can be replaced by a PEG parser that is easy to maintain and covers source->AST.
 
 ## Testing
 
