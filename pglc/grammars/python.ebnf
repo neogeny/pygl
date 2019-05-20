@@ -126,9 +126,9 @@ simple_stmt
 small_stmt
     =
     | import_stmt
+    | flow_stmt
     | del_stmt
     | pass_stmt
-    | flow_stmt
     | global_stmt
     | nonlocal_stmt
     | assert_stmt
@@ -301,8 +301,8 @@ assert_stmt
 compound_stmt
     =
     | if_stmt
-    | while_stmt
     | for_stmt
+    | while_stmt
     | try_stmt
     | with_stmt
     | funcdef
@@ -523,7 +523,7 @@ testlist_comp
     (namedexpr_test | star_expr)
     (
           comp_for
-        | {',' empty (namedexpr_test | star_expr)}* [','])
+        | {',' empty (namedexpr_test | star_expr) empty}* [','])
     ;
 
 
@@ -535,7 +535,7 @@ trailer
 
 subscriptlist
     =
-    subscript {','  subscript}* [',']
+    subscript {','  empty subscript empty }* [',']
     ;
 
 
