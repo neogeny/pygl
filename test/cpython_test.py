@@ -43,6 +43,6 @@ def test_filepath(filepath):
     assert source is not None
 
     try:
-        parse(source, start='file_input', trace=True, colorize=True)
+        parse(source, start='file_input', trace=False, colorize=True)
     except Exception as e:
         raise e from None
