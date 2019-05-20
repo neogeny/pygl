@@ -2,7 +2,7 @@
 @@left_recursion :: False
 @@parseinfo :: True
 @@whitespace :: /(?:(?!\n)\s)+/
-@@eol_comments :: /(?ms)\s*#.*(\n|$)/
+@@eol_comments :: /(?ms)\s*#.*?(\n|$)/
 
 @@keyword :: False      await      else       import     pass
 @@keyword :: None       break      except     in         raise
@@ -125,14 +125,14 @@ simple_stmt
 
 small_stmt
     =
-    | import_stmt
+    | expr_stmt
     | flow_stmt
     | del_stmt
     | pass_stmt
     | global_stmt
     | nonlocal_stmt
     | assert_stmt
-    | expr_stmt
+    | import_stmt
     ;
 
 
@@ -155,13 +155,13 @@ expr_stmt
 
 annassign
     =
-    ':' test ['=' (yield_expr | testlist)]
+    ':' test ['=' ~ (yield_expr | testlist)]
     ;
 
 
 testlist_star_expr
     =
-    (test | star_expr) {',' _ (test | star_expr)}* [',']
+    (test | star_expr) {',' _ (test | star_expr)}* [',' ~]
     ;
 
 
@@ -523,7 +523,8 @@ testlist_comp
     (namedexpr_test | star_expr)
     (
           comp_for
-        | {',' _ (namedexpr_test | star_expr) _}* [','])
+        | {',' _ (namedexpr_test | star_expr) ~ _}* [',']
+    )
     ;
 
 
@@ -745,9 +746,9 @@ STRING
     ;
 
 
-NEWLINE = $ | /(?:(?!\n)\s)*\n/;
+NEWLINE = $ | /\s*\n/;
 
-_ = /(?:(?:(?!\n)\s)*\n)*/ ;
+_ = /(\s*\n)*/ ;
 
 @nomemo
 INDENT = /(?:(?:(?!\n)\s)*\n)*/  @:/^\s+/ ;
