@@ -1,7 +1,7 @@
 @@grammar :: Python
 @@left_recursion :: False
 @@parseinfo :: True
-@@whitespace :: /(?:(?!\n)\s)+/
+@@whitespace :: /(?:(?!\r?\n|\r)\s)+/
 @@eol_comments :: /(?ms)\s*#.*?(\n|$)/
 
 @@keyword :: False      await      else       import     pass
@@ -25,15 +25,14 @@ start
 
 single_input
     =
-    compound_stmt NEWLINE | simple_stmt | NEWLINE
+    compound_stmt nl | simple_stmt | nl
     ;
 
 
 file_input
     =
-    _
-    [string_stmt]
-    {_ import_stmt _}*
+    {_ string ~ _}*
+    {_ import_stmt ~ _}*
     {_ stmt _}* _ ENDMARKER
     ;
 
@@ -46,7 +45,7 @@ eval_input
 
 decorator
     =
-    '@' dotted_name ['(' [arglist] ')'] NEWLINE
+    '@' dotted_name ['(' [arglist] ')'] nl
     ;
 
 
@@ -119,7 +118,7 @@ stmt
 
 simple_stmt
     =
-    small_stmt {';' small_stmt}* [';'] NEWLINE
+    small_stmt {';' small_stmt}* [';'] nl
     ;
 
 
@@ -320,37 +319,37 @@ async_stmt
 
 if_stmt
     =
-    'if' ~ namedexpr_test ':' SUITE
-    {EQDENT 'elif' ~ namedexpr_test ':' SUITE}*
-    [EQDENT 'else' ~ ':' SUITE]
+    'if' ~ namedexpr_test ':' suite
+    {EQDENT 'elif' ~ namedexpr_test ':' suite}*
+    [EQDENT 'else' ~ ':' suite]
     ;
 
 
 while_stmt
     =
-    'while' ~ namedexpr_test ':' SUITE ['else' ':' SUITE]
+    'while' ~ namedexpr_test ':' suite ['else' ':' suite]
     ;
 
 
 for_stmt
     =
-    'for' ~ exprlist 'in' testlist ':' [TYPE_COMMENT] SUITE ['else' ':' SUITE]
+    'for' ~ exprlist 'in' testlist ':' [TYPE_COMMENT] suite ['else' ':' suite]
     ;
 
 
 try_stmt
     =
-    'try' ~ ':' SUITE
+    'try' ~ ':' suite
     (
-        {except_clause ~ ':' SUITE}+ ['else' ':' SUITE] ['finally' ':' SUITE]
-        | 'finally' ~ ':' SUITE
+        {except_clause ~ ':' suite}+ ['else' ':' suite] ['finally' ':' suite]
+        | 'finally' ~ ':' suite
     )
     ;
 
 
 with_stmt
     =
-    'with' ~ with_item {',' with_item}* ':' [TYPE_COMMENT] SUITE
+    'with' ~ with_item {',' with_item}* ':' [TYPE_COMMENT] suite
     ;
 
 
@@ -366,9 +365,9 @@ except_clause
     ;
 
 
-SUITE
+suite
     =
-      {NEWLINE}+ INDENT stmt ~ {EQDENT stmt ~}* ~ DEDENT
+      nl ~ INDENT stmt ~ {EQDENT stmt ~}* ~ DEDENT
     | simple_stmt
     ;
 
@@ -576,7 +575,7 @@ dictorsetmaker
 
 classdef
     =
-    'class' ~ name ['(' [arglist] ')'] ':' SUITE
+    'class' ~ name ['(' [arglist] ')'] ':' suite
     ;
 
 
@@ -640,13 +639,14 @@ yield_arg
 
 func_body_suite
     =
-    NEWLINE [TYPE_COMMENT NEWLINE] INDENT {stmt}+ DEDENT | simple_stmt
+      nl ~ [TYPE_COMMENT ~ nl] INDENT stmt ~ {EQDENT stmt ~}* DEDENT
+    | simple_stmt
     ;
 
 
 func_type_input
     =
-    func_type {NEWLINE}* ENDMARKER
+    func_type [nl] ENDMARKER
     ;
 
 
@@ -746,18 +746,18 @@ STRING
     ;
 
 
-NEWLINE = $ | /\s*\n/;
+nl = /(\s*\n)+/ ~ | /\s*/ $;
 
 _ = /(\s*\n)*/ ;
 
 @nomemo
-INDENT = /(?:(?:(?!\n)\s)*\n)*/  @:/^\s+/ ;
+INDENT = /(\s*\n)*/  @:/^\s+/ ;
 
 @nomemo
-DEDENT = /(?:(?:(?!\n)\s)*\n)*/ @:();
+DEDENT = //;
 
 @nomemo
-EQDENT = /(?:(?:(?!\n)\s)*\n)*/ @:/^\s*/ ;
+EQDENT = /(\s*\n)*/  @:/^\s+/ ;
 
 ENDMARKER = $ ;
 
