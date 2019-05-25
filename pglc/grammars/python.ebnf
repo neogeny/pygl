@@ -137,7 +137,7 @@ small_stmt
 
 string_stmt
     =
-    string
+    f_string | string
     ;
 
 
@@ -510,7 +510,7 @@ atom
     ( '(' _ [yield_expr | testlist_comp] _ ')'
     | '[' _ [testlist_comp] _ ']'
     | '{' _ [dictorsetmaker] _ '}'
-    | {string}+
+    | {f_string|string}+
     | number
     | '...'
     | 'None'
@@ -748,6 +748,29 @@ STRING
     (r[bu]?|ur|br)?'(.|\\|\'|\.)*?'
     |
     (r[bu]?|ur|br)?"(.|\\|\"|\.)*?"
+    /
+    ;
+
+
+f_string
+    =
+    FSTRING
+    ;
+
+FSTRING
+    =
+    &/f(r[bu]?|ur|br)?('''|""")/ ~
+    /(?xs)
+    f(r[bu]?|ur|br)?'''(.|\\|\'|\.)*?'''
+    |
+    f(r[bu]?|ur|br)?"""(.|\\|\"|\.)*?"""
+    /
+    |
+    &/f(r[bu]?|ur|br)?["']/ ~
+    /(?xs)
+    f(r[bu]?|ur|br)?'(.|\\|\'|\.)*?'
+    |
+    f(r[bu]?|ur|br)?"(.|\\|\"|\.)*?"
     /
     ;
 
