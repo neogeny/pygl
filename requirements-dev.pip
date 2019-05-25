@@ -4,6 +4,7 @@ flake8
 git-pylint-commit-hook
 ipython
 mypy
+psutil
 pylint
 pytest
 pytest-parallel

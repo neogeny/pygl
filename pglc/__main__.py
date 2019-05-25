@@ -38,6 +38,8 @@ def _pending_cmdline_options():
 
 
 def main():
+    sys.setrecursionlimit(4 * sys.getrecursionlimit())
+
     args = docopt.docopt(str(USAGE), version=settings.__version__)
     filename = args['<file.py>']
     trace = args['--trace']

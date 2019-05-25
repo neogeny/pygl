@@ -1,10 +1,15 @@
-import re
+import sys
 from pathlib import Path
 
 import pytest
 
 from pglc.pythonc import parse
 from pglc.settings import CPYTHON_PATH
+
+
+@pytest.fixture(scope="session")
+def increase_python_stack():
+    sys.setrecursionlimit(4 * sys.getrecursionlimit())
 
 
 def _get_cpython_python_source():
@@ -38,11 +43,9 @@ def load_filepath(filepath):
 
 
 @pytest.mark.parametrize("filepath", cpython_python_sources, ids=_stem)
-def test_filepath(filepath):
+def test_filepath(filepath, trace=False):
+    sys.setrecursionlimit(4 * 8 * 1024)
     source = load_filepath(filepath)
     assert source is not None
 
-    try:
-        parse(source, start='file_input', trace=False, colorize=True)
-    except Exception as e:
-        raise e from None
+    return parse(source, start='file_input', trace=trace, colorize=True)

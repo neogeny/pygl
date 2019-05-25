@@ -28,4 +28,7 @@ def parse(source, **kwargs):
         semantics = PythonSemantics()
     parser = python_parser()\
 
-    parser.parse(source, semantics=semantics, **kwargs)
+    return parser.parse(source, semantics=semantics, **kwargs)
+
+
+python_parser()
