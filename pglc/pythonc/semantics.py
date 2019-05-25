@@ -3,11 +3,9 @@ from dataclasses import dataclass, field
 from typing import List
 
 from tatsu.exceptions import FailedSemantics
+from tatsu.util import debug
 
-
-def debug(*args, **kwargs):
-    file = kwargs.pop('file', sys.stderr)
-    print(*args, file=file, **kwargs)
+from ..settings import DEBUG
 
 
 @dataclass()
@@ -21,7 +19,8 @@ class PythonSemantics:
         return self.indent_levels[-1] if self.indent_levels else 0  # pylint: disable=E1136
 
     def INDENT(self, ast):
-        # debug('INDENT', self.indent_levels, '"%s"' % ast)
+        if DEBUG:
+            debug('INDENT', self.indent_levels, '"%s"' % ast)
         indent = len(ast.strip('\r\n'))
         prev = self.current_indent()
         if not indent or indent <= prev:
@@ -29,7 +28,8 @@ class PythonSemantics:
         self.indent_levels.append(indent)
 
     def DEDENT(self, ast):
-        # debug('DEDENT', self.indent_levels, '"%s"' % ast)
+        if DEBUG:
+            debug('DEDENT', self.indent_levels, '"%s"' % ast)
         indent = len(ast.strip('\r\n'))
         while self.indent_levels and self.indent_levels[-1] > indent:
             self.indent_levels.pop()

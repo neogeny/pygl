@@ -786,7 +786,7 @@ INDENT = [/(\s*\n)+/]  @:/^\s+/ ;
 DEDENT = [/(\s*\n)+/]  @:&/^\s*/ ;
 
 @nomemo
-EQDENT = /(\s*\n)*/  @:/^\s+/ ;
+EQDENT = [/(\s*\n)+/]  @:&/^\s*/ ;
 
 ENDMARKER = $ ;
 
