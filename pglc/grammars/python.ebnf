@@ -584,7 +584,7 @@ classdef
 
 arglist
     =
-    _ argument {',' _ argument}* [',']
+    _ argument {',' _ argument}* [',' ~ _]
     ;
 
 
