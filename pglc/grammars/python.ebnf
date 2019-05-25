@@ -166,7 +166,7 @@ testlist_star_expr
 
 augassign
     =
-    (| '+='
+    | '+='
     | '-='
     | '*='
     | '@='
@@ -178,7 +178,7 @@ augassign
     | '<<='
     | '>>='
     | '**='
-    | '//=')
+    | '//='
     ;
 
 
@@ -341,8 +341,11 @@ try_stmt
     =
     'try' ~ ':' suite
     (
-        {except_clause ~ ':' suite}+ ['else' ':' suite] ['finally' ':' suite]
-        | 'finally' ~ ':' suite
+            {except_clause ~ ':' suite}+ ~
+            ['else' ~ ':' suite]
+            ['finally' ~ ':' suite]
+        |
+            'finally' ~ ':' suite
     )
     ;
 
@@ -474,13 +477,13 @@ shift_expr
 
 arith_expr
     =
-    term {('+' | '-') ~ term}*
+    term {('+' | '-') !'=' ~ term}*
     ;
 
 
 term
     =
-    factor {('*' | '@' | '/' | '%' | '//') factor}*
+    factor {('*' | '@' | '/' | '%' | '//') !'=' ~ factor}*
     ;
 
 
@@ -751,13 +754,13 @@ STRING
 
 nl = /(\s*\n)+/ ~ | /\s*/ $;
 
-_ = /(\s*\n)*/ ;
+_ = [/(\s*\n)+/] ;
 
 @nomemo
-INDENT = /(\s*\n)*/  @:/^\s+/ ;
+INDENT = [/(\s*\n)+/]  @:/^\s+/ ;
 
 @nomemo
-DEDENT = //;
+DEDENT = [/(\s*\n)+/]  @:&/^\s*/ ;
 
 @nomemo
 EQDENT = /(\s*\n)*/  @:/^\s+/ ;

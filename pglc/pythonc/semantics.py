@@ -21,6 +21,7 @@ class PythonSemantics:
         return self.indent_levels[-1] if self.indent_levels else 0  # pylint: disable=E1136
 
     def INDENT(self, ast):
+        # debug('INDENT', self.indent_levels, '"%s"' % ast)
         indent = len(ast.strip('\r\n'))
         prev = self.current_indent()
         if not indent or indent <= prev:
@@ -28,9 +29,10 @@ class PythonSemantics:
         self.indent_levels.append(indent)
 
     def DEDENT(self, ast):
-        if not self.indent_levels:
-            self.error('Expecting DEDENT')
-        self.indent_levels.pop()
+        # debug('DEDENT', self.indent_levels, '"%s"' % ast)
+        indent = len(ast.strip('\r\n'))
+        while self.indent_levels and self.indent_levels[-1] > indent:
+            self.indent_levels.pop()
 
     def EQDENT(self, ast):
         indent = len(ast.strip('\r\n'))
