@@ -482,19 +482,19 @@ star_expr
 
 expr
     =
-    xor_expr {'|' ~ xor_expr}*
+    xor_expr {'|' !'=' ~ xor_expr}*
     ;
 
 
 xor_expr
     =
-    and_expr {'^' ~ and_expr}*
+    and_expr {'^' !'=' ~ and_expr}*
     ;
 
 
 and_expr
     =
-    shift_expr {'&' ~ shift_expr}*
+    shift_expr {'&' !'=' ~ shift_expr}*
     ;
 
 

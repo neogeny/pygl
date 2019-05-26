@@ -1,2 +1,3 @@
 #!/bin/bash
+gvim $1
 DEBUG=1 python -Oum pglc -t $* 2>&1 | less -FRX
