@@ -529,7 +529,7 @@ atom
 
 testlist_comp
     =
-    (namedexpr_test | star_expr)
+    (namedexpr_test | star_expr) _
     (
           comp_for
         | {',' _ (namedexpr_test | star_expr) ~ _}* [',']
@@ -613,7 +613,7 @@ comp_iter
 
 sync_comp_for
     =
-    'for' ~ exprlist 'in' ~ or_test [comp_iter]
+    'for' ~ exprlist 'in' ~ or_test [_ comp_iter]
     ;
 
 
@@ -625,7 +625,7 @@ comp_for
 
 comp_if
     =
-    'if' ~ test_nocond [comp_iter]
+    'if' ~ test_nocond [_ comp_iter]
     ;
 
 
