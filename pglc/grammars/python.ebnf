@@ -603,7 +603,7 @@ testlist
 dictorsetmaker
     =
         (test ':' test | '**' expr) _
-        (comp_for | {',' _ (test ':' test | '**' expr) ~}* [','])
+        (comp_for | {',' _ (test ':' _ test | '**' expr) ~ }* [','])
     |
         (test | star_expr) _
         (comp_for | {','  _ (test | star_expr) ~ }* [','])
