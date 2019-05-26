@@ -13,6 +13,8 @@ Currently, the TatSu PEG grammar for Python is being debugged against the Python
 
 These are the steps of the plan:
 
+> **NOTE**: In what follows _PackCC_ may actually be `apt install peg`, or some other PEG->C parser generator that is maintained, and generates _C_. _PackCC_ was initially chosen because it was feature-complete, and self-contained, but it lacks a maintainer, and may not be fully debugged.
+
 1. ✓ Create a TatSu parser to parse `Grammar/Grammar`
 1. ✓ Parse the `Grammar/Grammar` using the above parser
 1. ✓ Generate a draft PEG grammar for Python from the above using TatSu
