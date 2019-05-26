@@ -1,6 +1,7 @@
 import re
 
 import tatsu
+from tatsu.buffering import Buffer
 
 from ..grammars import load_python_peg_grammar
 from .semantics import PythonSemantics
@@ -24,10 +25,9 @@ def parse(source, **kwargs):
         source = source.decode(encoding=encoding)
 
     semantics = kwargs.pop('semantics', None)
+    parser = python_parser()
     if semantics is None:
         semantics = PythonSemantics()
-    parser = python_parser()\
-
     return parser.parse(source, semantics=semantics, **kwargs)
 
 

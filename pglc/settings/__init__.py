@@ -6,4 +6,4 @@ try:
 except ImportError:
     pass
 
-DEBUG = os.environ.get('DEBUG', False)
+DEBUG = bool(os.environ.get('DEBUG', False))

@@ -71,7 +71,7 @@ async_funcdef
 
 funcdef
     =
-    'def' ~ name parameters ['->' test] ':' [TYPE_COMMENT] func_body_suite
+    'def' ~ name parameters ['->' test] ':' [TYPE_COMMENT ~] func_body_suite
     ;
 
 
@@ -360,7 +360,7 @@ while_stmt
 
 for_stmt
     =
-    'for' ~ exprlist 'in' testlist ':' [TYPE_COMMENT] suite ['else' ':' suite]
+    'for' ~ exprlist 'in' ~ testlist ':' ~ [TYPE_COMMENT ~] suite ['else' ':' suite]
     ;
 
 
@@ -368,11 +368,11 @@ try_stmt
     =
     'try' ~ ':' suite
     (
-            {except_clause ~ ':' suite}+ ~
-            ['else' ~ ':' suite]
-            ['finally' ~ ':' suite]
+            {EQDENT except_clause ~ ':' suite}+ ~
+            [EQDENT 'else' ~ ':' suite]
+            [EQDENT 'finally' ~ ':' suite]
         |
-            'finally' ~ ':' suite
+            EQDENT 'finally' ~ ':' suite
     )
     ;
 
@@ -669,7 +669,7 @@ yield_arg
 
 func_body_suite
     =
-      nl ~ [TYPE_COMMENT ~ nl] INDENT stmt ~ {EQDENT stmt ~}* DEDENT
+      nl ~ [TYPE_COMMENT ~ nl] ~ INDENT stmt ~ {EQDENT stmt ~}* DEDENT
     | simple_stmt
     ;
 
@@ -819,7 +819,7 @@ INDENT = /(?:\s*(?:#[^\n]*?)?\n)*/  @:/^\s+/ ;
 DEDENT = /(?:\s*(?:#[^\n]*?)?\n)*/  @:&/^\s*/ ;
 
 @nomemo
-EQDENT = /(?:\s*(?:#.[^\n]*?)?\n)*/  @:&/^\s*/ ;
+EQDENT = /(?:\s*(?:#.[^\n]*?)?\n)*/ @:/^\s+/ ;
 
 ENDMARKER = $ ;
 
