@@ -77,7 +77,7 @@ funcdef
 
 parameters
     =
-    '(' [typedargslist] _ ')'
+    '(' _ [typedargslist] _ ')'
     ;
 
 
