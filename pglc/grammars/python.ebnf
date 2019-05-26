@@ -162,6 +162,55 @@ tfpdef
 
 varargslist
     =
+    [posonlyargs ',']
+    (
+        | [varargs] (vararg|arg) [',' _ [varargs] (kwvararg|arg)]
+        | [varargs] (kwvararg|arg)
+        | kwvararg
+        | vararg [',']
+        | varargs
+    )
+    |
+        posonlyargs [',']
+    ;
+
+
+vfpdef
+    =
+    name
+    ;
+
+
+arg
+    =
+    vfpdef ['=' _ test]
+    ;
+
+varargs
+    =
+    {arg ',' _ }+
+    ;
+
+posonlyargs
+    =
+    [varargs ','] '/'
+    ;
+
+vararg
+    =
+    '*' !'*' ~ test
+    ;
+
+
+kwvararg
+    =
+    '**' ~ test
+    ;
+
+
+
+_original_varargslist
+    =
     |   vfpdef ['=' _ test]
         {',' vfpdef ['=' _ test]}*
         [
@@ -173,12 +222,6 @@ varargslist
         ]
     | '*' [vfpdef] {',' vfpdef ['=' _ test]}* [',' ['**' vfpdef [',']]]
     | '**' vfpdef [',']
-    ;
-
-
-vfpdef
-    =
-    name
     ;
 
 
