@@ -302,7 +302,7 @@ dotted_as_names
 
 dotted_name
     =
-    name {'.' ~ name}*
+    name {_ '.' _ ~ name}*
     ;
 
 
@@ -566,7 +566,7 @@ testlist_comp
 
 trailer
     =
-    '(' ~ [arglist] _ ')' | '[' ~ subscriptlist ']' | '.' ~ name
+    '(' ~ [arglist] _ ')' | '[' ~ subscriptlist ']' | _ '.' ~ _ name
     ;
 
 
