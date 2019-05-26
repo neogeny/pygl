@@ -81,61 +81,39 @@ parameters
     ;
 
 
-typedargslist_good
-    =
-    (
-    | _posarglist ',' _ _kwarglist
-    | _kwarglist
-    | _posarglist
-    ) [[','] TYPE_COMMENT]
-    ;
-
-
 typedargslist
     =
     (
-    | [_arglist] (_vararg|_arg) [',' _ [_arglist] (_kwvararg|_arg)]
-    | [_arglist] (_kwvararg|_arg)
-    # | _vararg [',' _ _arglist [',' _ _kwvararg]]
-    # | _arglist [',' _ _kwvararg]
-    # | _kwvararg
-    ) [[','] TYPE_COMMENT]
+    | [typedargs] (vararg|typedarg) [',' _ [typedargs] (kwvararg|typedarg)]
+    | [typedargs] (kwvararg|typedarg)
+    | kwvararg
+    | vararg [[','] TYPE_COMMENT]
+    | typedargs
+    )
     ;
 
 
-_arg
+typedarg
     =
     tfpdef ['='  _ test] &[[','] TYPE_COMMENT]
     ;
 
 
-_arglist
+typedargs
     =
-    {_arg ',' [TYPE_COMMENT] _}+
+    {typedarg ',' [TYPE_COMMENT] _ }+
     ;
 
-_vararg
+vararg
     =
     '*' !'*' ~ [tfpdef ~ &[[','] TYPE_COMMENT] ]
     ;
 
 
-_kwvararg
+kwvararg
     =
-    '**' ~ tfpdef ~ &[[','] TYPE_COMMENT]
+    '**' ~ tfpdef ~ [[','] TYPE_COMMENT]
     ;
-
-_posarglist
-    =
-    _arglist [_vararg]
-    ;
-
-
-_kwarglist
-    =
-    _arglist [_kwvararg]
-    ;
-
 
 __original_typedargslist
     =
