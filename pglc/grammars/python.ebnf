@@ -447,7 +447,7 @@ namedexpr_test
 
 test
     =
-    lambdef | or_test [_ 'if' or_test _ 'else' ~  _ ~ test ]
+    lambdef | or_test [_ 'if' _ or_test _ 'else' ~  _ ~ test ]
     ;
 
 
