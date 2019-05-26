@@ -77,33 +77,90 @@ funcdef
 
 parameters
     =
-    '(' [typedargslist] ')'
+    '(' [typedargslist] _ ')'
+    ;
+
+
+typedargslist_good
+    =
+    (
+    | _posarglist ',' _ _kwarglist
+    | _kwarglist
+    | _posarglist
+    ) [[','] TYPE_COMMENT]
     ;
 
 
 typedargslist
     =
-        '**' tfpdef [','] [TYPE_COMMENT]
+    (
+    | [_arglist] (_vararg|_arg) [',' _ [_arglist] (_kwvararg|_arg)]
+    | [_arglist] (_kwvararg|_arg)
+    # | _vararg [',' _ _arglist [',' _ _kwvararg]]
+    # | _arglist [',' _ _kwvararg]
+    # | _kwvararg
+    ) [[','] TYPE_COMMENT]
+    ;
+
+
+_arg
+    =
+    tfpdef ['='  _ test] &[[','] TYPE_COMMENT]
+    ;
+
+
+_arglist
+    =
+    {_arg ',' [TYPE_COMMENT] _}+
+    ;
+
+_vararg
+    =
+    '*' !'*' ~ [tfpdef ~ &[[','] TYPE_COMMENT] ]
+    ;
+
+
+_kwvararg
+    =
+    '**' ~ tfpdef ~ &[[','] TYPE_COMMENT]
+    ;
+
+_posarglist
+    =
+    _arglist [_vararg]
+    ;
+
+
+_kwarglist
+    =
+    _arglist [_kwvararg]
+    ;
+
+
+__original_typedargslist
+    =
+        '**' ~ tfpdef [','] [TYPE_COMMENT]
     |
-        '*' [tfpdef] {',' [TYPE_COMMENT] _ tfpdef ['=' test]}*
+        '*' !'*' ~ [tfpdef] {',' [TYPE_COMMENT] _ tfpdef ~ ['=' ~ test]}*
         (
                 TYPE_COMMENT
             |
                 [',' [TYPE_COMMENT] [ _ '**' tfpdef [','] [TYPE_COMMENT]]]
         )
     |
-        tfpdef ['=' test] {',' _ [TYPE_COMMENT] tfpdef ['=' test]}*
+        tfpdef ['=' test] {',' _ [TYPE_COMMENT] tfpdef ~['=' test]}*
         (
                 TYPE_COMMENT
             |
                 [
                     ',' [TYPE_COMMENT]
                     [
-                        |  '**' tfpdef [','] [TYPE_COMMENT]
-                        |  '*' [tfpdef] {',' _ [TYPE_COMMENT] tfpdef ['=' test]}*
+                        |  '**' ~ tfpdef [','] [TYPE_COMMENT]
+                        |  '*' !'*' ~ [tfpdef] {',' _ [TYPE_COMMENT] tfpdef ~ ['=' ~ test]}*
                             (
-                                  TYPE_COMMENT
-                                | [',' [TYPE_COMMENT] [_ '**' tfpdef [','] [TYPE_COMMENT]]]
+                                    TYPE_COMMENT
+                                |
+                                    [',' [TYPE_COMMENT] [_ '**' tfpdef [','] [TYPE_COMMENT]]]
                             )
                     ]
                 ]
