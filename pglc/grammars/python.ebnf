@@ -85,14 +85,14 @@ typedargslist
     =
         '**' tfpdef [','] [TYPE_COMMENT]
     |
-        '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}*
+        '*' [tfpdef] {',' [TYPE_COMMENT] _ tfpdef ['=' test]}*
         (
                 TYPE_COMMENT
             |
-                [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]]
+                [',' [TYPE_COMMENT] [ _ '**' tfpdef [','] [TYPE_COMMENT]]]
         )
     |
-        tfpdef ['=' test] {',' [TYPE_COMMENT] tfpdef ['=' test]}*
+        tfpdef ['=' test] {',' _ [TYPE_COMMENT] tfpdef ['=' test]}*
         (
                 TYPE_COMMENT
             |
@@ -100,10 +100,10 @@ typedargslist
                     ',' [TYPE_COMMENT]
                     [
                         |  '**' tfpdef [','] [TYPE_COMMENT]
-                        |  '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}*
+                        |  '*' [tfpdef] {',' _ [TYPE_COMMENT] tfpdef ['=' test]}*
                             (
                                   TYPE_COMMENT
-                                | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]]
+                                | [',' [TYPE_COMMENT] [_ '**' tfpdef [','] [TYPE_COMMENT]]]
                             )
                     ]
                 ]
@@ -412,7 +412,7 @@ namedexpr_test
 
 test
     =
-    lambdef | or_test ['if' ~ or_test _ 'else'  ~ test ]
+    lambdef | or_test ['if' ~ or_test _ 'else' _ ~ test ]
     ;
 
 
