@@ -47,7 +47,7 @@ eval_input
 
 decorator
     =
-    '@' dotted_name ['(' [arglist] ')'] nl
+    '@' dotted_name ['(' ~ [arglist] _ ')'] nl
     ;
 
 
@@ -412,7 +412,7 @@ namedexpr_test
 
 test
     =
-    lambdef | or_test ['if' ~ or_test _ 'else' _ ~ test ]
+    lambdef | or_test [_ 'if' or_test _ 'else' ~  _ ~ test ]
     ;
 
 
@@ -566,7 +566,7 @@ testlist_comp
 
 trailer
     =
-    '(' ~ [arglist] ')' | '[' ~ subscriptlist ']' | '.' ~ name
+    '(' ~ [arglist] _ ')' | '[' ~ subscriptlist ']' | '.' ~ name
     ;
 
 
@@ -612,7 +612,7 @@ dictorsetmaker
 
 classdef
     =
-    'class' ~ name ['(' [arglist] ')'] ':' suite
+    'class' ~ name ['(' ~ [arglist] _ ')'] ':' suite
     ;
 
 
