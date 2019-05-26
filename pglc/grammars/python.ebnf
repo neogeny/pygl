@@ -83,13 +83,16 @@ parameters
 
 typedargslist
     =
+    [typedposonlyargs ',']
     (
-    | [typedargs] (vararg|typedarg) [',' _ [typedargs] (kwvararg|typedarg)]
-    | [typedargs] (kwvararg|typedarg)
-    | kwvararg
-    | vararg [[','] TYPE_COMMENT]
-    | typedargs
+        | [typedargs] (typedvararg|typedarg) [',' _ [typedargs] (typedkwvararg|typedarg)]
+        | [typedargs] (typedkwvararg|typedarg)
+        | typedkwvararg
+        | typedvararg [[','] TYPE_COMMENT]
+        | typedargs
     )
+    |
+        typedposonlyargs [[','] TYPE_COMMENT]
     ;
 
 
@@ -104,13 +107,18 @@ typedargs
     {typedarg ',' [TYPE_COMMENT] _ }+
     ;
 
-vararg
+typedposonlyargs
+    =
+    [typedargs ','] '/'
+    ;
+
+typedvararg
     =
     '*' !'*' ~ [tfpdef ~ &[[','] TYPE_COMMENT] ]
     ;
 
 
-kwvararg
+typedkwvararg
     =
     '**' ~ tfpdef ~ [[','] TYPE_COMMENT]
     ;
@@ -154,10 +162,17 @@ tfpdef
 
 varargslist
     =
-    (| vfpdef ['=' _ test] {',' vfpdef ['=' _ test]}* [',' [| '*' [vfpdef] {',' vfpdef ['=' _ test]}* [',' ['**' vfpdef [',']]]
-    | '**' vfpdef [',']]]
+    |   vfpdef ['=' _ test]
+        {',' vfpdef ['=' _ test]}*
+        [
+             ','
+            [
+                  '*' [vfpdef] {',' vfpdef ['=' _ test]}* [',' ['**' vfpdef [',']]]
+                | '**' vfpdef [',']
+            ]
+        ]
     | '*' [vfpdef] {',' vfpdef ['=' _ test]}* [',' ['**' vfpdef [',']]]
-    | '**' vfpdef [','])
+    | '**' vfpdef [',']
     ;
 
 
