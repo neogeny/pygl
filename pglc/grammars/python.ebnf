@@ -247,7 +247,12 @@ import_name
 import_from
     =
     'from' ~ ({'.' | '...'}* dotted_name | {'.' | '...'}+)
-    'import' ~ ('*' | '(' import_as_names ')' | import_as_names)
+    'import' ~
+    (
+          '*' ~
+        | '(' ~ import_as_names ')'
+        | import_as_names
+    )
     ;
 
 
@@ -265,7 +270,7 @@ dotted_as_name
 
 import_as_names
     =
-    import_as_name {',' ~ import_as_name}* [',']
+    import_as_name {',' _ ~ import_as_name}* [',' ~]
     ;
 
 
@@ -512,7 +517,7 @@ atom
     ( '(' _ [yield_expr | testlist_comp] _ ')'
     | '[' _ [testlist_comp] _ ']'
     | '{' _ [dictorsetmaker] _ '}'
-    | {f_string|string}+
+    | {(f_string|string) _}+
     | number
     | '...'
     | 'None'
@@ -664,9 +669,9 @@ func_type
 typelist
     =
         | '**' ~ test
-        | '*' [test] {',' ~ test}* [',' '**' ~ test]
-        | ',' ~ ['*' ~ [test] {',' test}* [',' '**' ~ test]]
         | test {',' ~ test}* ['**' ~ test]
+        | '*' [test] {',' ~ test}* [',' '**' ~ test]
+        | ',' ['*' ~ [test] {',' test}* [',' '**' ~ test]]
     ;
 
 
