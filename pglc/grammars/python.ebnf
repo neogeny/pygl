@@ -621,31 +621,31 @@ argument
     | test '=' test
     | '**' test
     | '*' test
-    | test [comp_for]
+    | test [ comp_for]
     ;
 
 
 comp_iter
     =
-    comp_for | comp_if
+    _ (comp_for | comp_if)
     ;
 
 
 sync_comp_for
     =
-    'for' ~ exprlist 'in' ~ or_test [_ comp_iter]
+    'for' ~ exprlist 'in' ~ or_test [comp_iter]
     ;
 
 
 comp_for
     =
-    ['async' ~] sync_comp_for
+    _ ['async' ~] sync_comp_for
     ;
 
 
 comp_if
     =
-    'if' ~ test_nocond [_ comp_iter]
+    'if' ~ test_nocond [comp_iter]
     ;
 
 
