@@ -601,7 +601,7 @@ testlist_comp
 
 trailer
     =
-    '(' ~ [arglist] _ ')' | '[' ~ subscriptlist ']' | _ '.' ~ _ name
+    '(' _ ~ [arglist] _ ')' | '[' _ ~ subscriptlist _ ']' | _ '.' ~ _ name
     ;
 
 
@@ -613,13 +613,13 @@ subscriptlist
 
 subscript
     =
-    [test] ':' ~ [test] [sliceop] | test
+    [test] ':' _ ~ [test] [sliceop] | test
     ;
 
 
 sliceop
     =
-    ':' ~ [test]
+    ':' _ ~ [test]
     ;
 
 
