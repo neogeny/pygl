@@ -454,7 +454,7 @@ not_test
 
 comparison
     =
-    expr {comp_op _ ~ expr}*
+    expr {_ comp_op _ ~ expr}*
     ;
 
 
