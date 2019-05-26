@@ -83,11 +83,31 @@ parameters
 
 typedargslist
     =
-    (| tfpdef ['=' test] {',' [TYPE_COMMENT] tfpdef ['=' test]}* (| TYPE_COMMENT
-    | [',' [TYPE_COMMENT] [| '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}* (TYPE_COMMENT | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]])
-    | '**' tfpdef [','] [TYPE_COMMENT]]])
-    | '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}* (TYPE_COMMENT | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]])
-    | '**' tfpdef [','] [TYPE_COMMENT])
+        '**' tfpdef [','] [TYPE_COMMENT]
+    |
+        '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}*
+        (
+                TYPE_COMMENT
+            |
+                [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]]
+        )
+    |
+        tfpdef ['=' test] {',' [TYPE_COMMENT] tfpdef ['=' test]}*
+        (
+                TYPE_COMMENT
+            |
+                [
+                    ',' [TYPE_COMMENT]
+                    [
+                        |  '**' tfpdef [','] [TYPE_COMMENT]
+                        |  '*' [tfpdef] {',' [TYPE_COMMENT] tfpdef ['=' test]}*
+                            (
+                                  TYPE_COMMENT
+                                | [',' [TYPE_COMMENT] ['**' tfpdef [','] [TYPE_COMMENT]]]
+                            )
+                    ]
+                ]
+        )
     ;
 
 
