@@ -5,7 +5,7 @@
 
 The main objective of the project is to produce a PEG grammar for Python, so different PEG parser generators can be tested as parsing technologies for Python. The tool used to bootstrap the process is [TatSu](https://tatsu.readthedocs.io) (currently, **pglc** requires the unreleased [master version](https://github.com/neogeny/TatSu))
 
-The strategy used in **pglc** is explained on [this topic](https://discuss.python.org/t/preparing-for-new-python-parsing/1550/38) on [Python's Discourse site].
+The strategy used in **pglc** is explained on [this topic](https://discuss.python.org/t/preparing-for-new-python-parsing/1550/38) on [Python's Discourse site](https://discuss.python.org/c/ideas).
 
 ## Project Plan
 
