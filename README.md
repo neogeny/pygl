@@ -48,5 +48,5 @@ $ make
 See the `Makefile` or type this for options:
 
 ```bash
-python -m test.parse -s
+python -m test.parse -h
 ```
