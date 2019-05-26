@@ -1,6 +1,10 @@
 import os
 from .global_settings import *  # noqa
-__version__ = '0.1.0'
+
+
+__version__ = '0.1.0a2'
+
+
 try:
     from .local_settings import *  # noqa
 except ImportError:
