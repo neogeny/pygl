@@ -517,25 +517,25 @@ star_expr
 
 expr
     =
-    xor_expr {'|' !'=' ~ xor_expr}*
+    xor_expr {'|' !'=' ~ _ xor_expr}*
     ;
 
 
 xor_expr
     =
-    and_expr {'^' !'=' ~ and_expr}*
+    and_expr {'^' !'=' ~ _ and_expr}*
     ;
 
 
 and_expr
     =
-    shift_expr {'&' !'=' ~ shift_expr}*
+    shift_expr {'&' !'=' ~ _ shift_expr}*
     ;
 
 
 shift_expr
     =
-    arith_expr {('<<' | '>>') !'=' ~ arith_expr}*
+    arith_expr {('<<' | '>>') !'=' ~ _ arith_expr}*
     ;
 
 
