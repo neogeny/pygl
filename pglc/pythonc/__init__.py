@@ -1,7 +1,6 @@
 import re
 
 import tatsu
-from tatsu.buffering import Buffer
 
 from ..grammars import load_python_peg_grammar
 from .semantics import PythonSemantics
