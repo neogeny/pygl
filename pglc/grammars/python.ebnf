@@ -675,7 +675,7 @@ comp_iter
 
 sync_comp_for
     =
-    'for' ~ exprlist _ 'in' ~ or_test _ [comp_iter]
+    'for' ~ exprlist _ 'in' ~ _ or_test _ [comp_iter]
     ;
 
 
