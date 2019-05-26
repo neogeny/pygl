@@ -164,11 +164,11 @@ varargslist
     =
     [posonlyargs ',']
     (
-        | [varargs] (vararg|arg) [',' _ [varargs] (kwvararg|arg)]
-        | [varargs] (kwvararg|arg)
+        | [args] (vararg|arg) [',' _ [args] (kwvararg|arg)]
+        | [args] (kwvararg|arg)
         | kwvararg
         | vararg [',']
-        | varargs
+        | args
     )
     |
         posonlyargs [',']
@@ -186,15 +186,18 @@ arg
     vfpdef ['=' _ test]
     ;
 
-varargs
+
+args
     =
     {arg ',' _ }+
     ;
 
+
 posonlyargs
     =
-    [varargs ','] '/'
+    [args ','] '/'
     ;
+
 
 vararg
     =
