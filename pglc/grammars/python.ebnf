@@ -33,7 +33,7 @@ single_input
 
 file_input
     =
-    {_ string ~ _}*
+    {_ string _}*
     {_ import_stmt ~ _}*
     {_ stmt _}* _ ENDMARKER
     ;
@@ -139,7 +139,7 @@ small_stmt
 
 string_stmt
     =
-    f_string | string
+    string
     ;
 
 
@@ -517,7 +517,7 @@ atom
     ( '(' _ [yield_expr | testlist_comp] _ ')'
     | '[' _ [testlist_comp] _ ']'
     | '{' _ [dictorsetmaker] _ '}'
-    | {(f_string|string) _}+
+    | string
     | number
     | '...'
     | 'None'
@@ -738,6 +738,11 @@ floatnumber
 
 
 string
+    =
+    (f_string|n_string) ~ {_ (f_string|n_string)}*
+    ;
+
+n_string
     =
     STRING
     ;
