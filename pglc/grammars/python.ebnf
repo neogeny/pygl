@@ -575,10 +575,10 @@ testlist
 
 dictorsetmaker
     =
-        (test ':' test | '**' expr)
+        (test ':' test | '**' expr) _
         (comp_for | {',' _ (test ':' test | '**' expr) ~}* [','])
     |
-        (test | star_expr)
+        (test | star_expr) _
         (comp_for | {','  _ (test | star_expr) ~ }* [','])
     ;
 
