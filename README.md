@@ -18,8 +18,8 @@ These are the steps of the plan:
 1. ✓ Create a TatSu parser to parse `Grammar/Grammar`
 1. ✓ Parse the `Grammar/Grammar` using the above parser
 1. ✓ Generate a draft PEG grammar for Python from the above using TatSu
-1. ⇒ Debug the PEG grammar using TatSu (PEG semantics require rule-choice ordering, etc.)
-1. Integrate the Python tokenizer through the `token` and `tokenize` modules.
+1. ✓ Debug the PEG grammar using TatSu (PEG semantics require rule-choice ordering, etc.). The grammar is currenly good for parsing 126 KLOC of Python in `cpython/**/*.py`.
+1. ⇒ Integrate the Python tokenizer using the `token` and `tokenize` modules.
 1. Generate AST from Python source using the above (at this point, the grammar is debugged and the parser complete)
 1. Measure parser performance (it should be within the expected Python vs C range). Pass, or abort
 1. Automatically generate a [PackCC](https://github.com/apalala/packcc) grammar for Python from the above
