@@ -1,7 +1,7 @@
 @@grammar :: Python
 @@left_recursion :: False
 @@parseinfo :: True
-@@whitespace :: /(?:(?!\r?\n|\r)\s)+/
+@@whitespace :: /(?:(?!\r?\n|\r)(?:\s|\\\n))+/
 @@eol_comments :: /(?ms)(?:(?!\n)\s)*#[^\n]*?(?=\n|$)/
 @@nameguard :: True
 @@namechars :: '_'
@@ -788,9 +788,9 @@ FSTRING
     ;
 
 
-nl = /(?:\s*(?:#[^\n]*?)?\n)+/ ~ | /\s*$/ $;
+nl = /(?:(?:\s|\\\n)*(?:#[^\n]*?)?\n)+/ ~ | /\s*$/ $;
 
-_ = /(?:\s*(?:#[^\n]*?)?\n)*/ ;
+_ = /(?:(?:\s|\\\n)*(?:#[^\n]*?)?\n)*/ ;
 
 @nomemo
 INDENT = /(?:\s*(?:#[^\n]*?)?\n)*/  @:/^\s+/ ;
