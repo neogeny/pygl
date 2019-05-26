@@ -412,7 +412,7 @@ namedexpr_test
 
 test
     =
-    lambdef | or_test ['if' ~ or_test 'else' ~ test]
+    lambdef | or_test ['if' ~ or_test _ 'else'  ~ test ]
     ;
 
 
@@ -536,16 +536,21 @@ atom_expr
 
 atom
     =
-    ( '(' _ [yield_expr | testlist_comp] _ ')'
-    | '[' _ [testlist_comp] _ ']'
-    | '{' _ [dictorsetmaker] _ '}'
-    | string
-    | number
-    | '...'
-    | 'None'
-    | 'True'
-    | 'False')
-    | name
+    (
+        |
+            (
+                | '(' _ [yield_expr | testlist_comp] _ ')'
+                | '[' _ [testlist_comp] _ ']'
+                | '{' _ [dictorsetmaker] _ '}'
+                | string
+                | number
+                | '...'
+                | 'None'
+                | 'True'
+                | 'False'
+            ) ~
+        | name
+    ) ~
     ;
 
 
@@ -635,7 +640,7 @@ comp_iter
 
 sync_comp_for
     =
-    'for' ~ exprlist 'in' ~ or_test [comp_iter]
+    'for' ~ exprlist _ 'in' ~ or_test _ [comp_iter]
     ;
 
 
