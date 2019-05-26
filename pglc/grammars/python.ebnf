@@ -305,7 +305,7 @@ import_from
     'import' ~
     (
           '*' ~
-        | '(' ~ import_as_names ')'
+        | '(' _ ~ import_as_names _ ')'
         | import_as_names
     )
     ;
