@@ -354,13 +354,15 @@ if_stmt
 
 while_stmt
     =
-    'while' ~ namedexpr_test ':' suite ['else' ':' suite]
+    'while' ~ namedexpr_test ':' suite
+    [EQDENT 'else' ~ ':' suite]
     ;
 
 
 for_stmt
     =
-    'for' ~ exprlist 'in' ~ testlist ':' ~ [TYPE_COMMENT ~] suite ['else' ':' suite]
+    'for' ~ exprlist 'in' ~ testlist ':' ~ [TYPE_COMMENT ~] suite
+    [EQDENT 'else' ~ ':' suite]
     ;
 
 
