@@ -3,6 +3,8 @@
 @@parseinfo :: True
 @@whitespace :: /(?:(?!\r?\n|\r)\s)+/
 @@eol_comments :: /(?ms)(?:(?!\n)\s)*#.*?(?:\n|$)/
+@@nameguard :: True
+@@namechars :: '_'
 
 @@keyword :: False      await      else       import     pass
 @@keyword :: None       break      except     in         raise
@@ -395,7 +397,7 @@ test_nocond
 
 lambdef
     =
-    'lambda' [varargslist] ':' test
+    'lambda' ~ [varargslist] ':' _ test
     ;
 
 
@@ -407,13 +409,13 @@ lambdef_nocond
 
 or_test
     =
-    and_test {'or' and_test}*
+    and_test {_ 'or' ~ _ and_test}*
     ;
 
 
 and_test
     =
-    not_test {'and' not_test}*
+    not_test {_ 'and' ~ _ not_test}*
     ;
 
 
@@ -477,13 +479,13 @@ shift_expr
 
 arith_expr
     =
-    term {('+' | '-') !'=' ~ term}*
+    term {_ ('+' | '-') !'=' ~ _ term}*
     ;
 
 
 term
     =
-    factor {('*' | '@' | '/' | '%' | '//') !'=' ~ factor}*
+    factor {_ ('*' | '@' | '/' | '%' | '//') !'=' ~ _ factor}*
     ;
 
 
