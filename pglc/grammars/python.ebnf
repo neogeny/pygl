@@ -175,7 +175,7 @@ stmt
 
 simple_stmt
     =
-    small_stmt {';' ~ small_stmt}* [';'] nl
+    small_stmt {';' _ ~ small_stmt}* [';'] nl
     ;
 
 
