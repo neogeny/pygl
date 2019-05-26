@@ -40,7 +40,7 @@ $ pip install -r requirements-dev.pip
 $ pytest
 ```
 
-To run the tests over `cpython/**/*.py` using all CPU cores, just type:
+To run the tests over `~/cpython/**/*.py` using all CPU cores, just type:
 
 ```bash
 $ make
