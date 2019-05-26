@@ -464,8 +464,8 @@ comp_op
     | '>='
     | '<='
     | '<>'
-    | '<'
-    | '>'
+    | '<' !'<'
+    | '>' !'>'
     | '!='
     | 'not' 'in'
     | 'in'
@@ -500,7 +500,7 @@ and_expr
 
 shift_expr
     =
-    arith_expr {('<<' | '>>') ~ arith_expr}*
+    arith_expr {('<<' | '>>') !'=' ~ arith_expr}*
     ;
 
 
@@ -524,7 +524,7 @@ factor
 
 power
     =
-    atom_expr ['**' ~ factor]
+    atom_expr ['**' !'=' ~ factor]
     ;
 
 
