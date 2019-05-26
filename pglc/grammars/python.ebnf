@@ -2,7 +2,7 @@
 @@left_recursion :: False
 @@parseinfo :: True
 @@whitespace :: /(?:(?!\r?\n|\r)\s)+/
-@@eol_comments :: /(?ms)(?:(?!\n)\s)*#.*?(?:\n|$)/
+@@eol_comments :: /(?ms)(?:(?!\n)\s)*#[^\n]*?(?=\n|$)/
 @@nameguard :: True
 @@namechars :: '_'
 
@@ -445,10 +445,10 @@ comp_op
     | '<'
     | '>'
     | '!='
-    | 'in'
     | 'not' 'in'
-    | 'is'
+    | 'in'
     | 'is' 'not'
+    | 'is'
     ;
 
 
@@ -788,18 +788,18 @@ FSTRING
     ;
 
 
-nl = /(?:\s*(?:#.*?)?\n)+/ ~ | /\s*/ $;
+nl = /(?:\s*(?:#[^\n]*?)?\n)+/ ~ | /\s*$/ $;
 
-_ = /(?:\s*(?:#.*?)?\n)*/ ;
-
-@nomemo
-INDENT = /(?:\s*(?:#.*?)?\n)*/  @:/^\s+/ ;
+_ = /(?:\s*(?:#[^\n]*?)?\n)*/ ;
 
 @nomemo
-DEDENT = /(?:\s*(?:#.*?)?\n)*/  @:&/^\s*/ ;
+INDENT = /(?:\s*(?:#[^\n]*?)?\n)*/  @:/^\s+/ ;
 
 @nomemo
-EQDENT = /(?:\s*(?:#.*?)?\n)*/  @:&/^\s*/ ;
+DEDENT = /(?:\s*(?:#[^\n]*?)?\n)*/  @:&/^\s*/ ;
+
+@nomemo
+EQDENT = /(?:\s*(?:#.[^\n]*?)?\n)*/  @:&/^\s*/ ;
 
 ENDMARKER = $ ;
 
