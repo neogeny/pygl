@@ -36,3 +36,15 @@ To run the current state of things:
 $ pip install -r requirements-dev.pip
 $ pytest
 ```
+
+To run the tests over `~cpython/**/*.py` using all CPU cores, just type:
+
+```bash
+$ make
+```
+
+See the `Makefile` or type this for options:
+
+```bash
+python -m test.parse -s
+```
