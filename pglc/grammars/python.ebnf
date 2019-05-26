@@ -154,9 +154,9 @@ tfpdef
 
 varargslist
     =
-    (| vfpdef ['=' test] {',' vfpdef ['=' test]}* [',' [| '*' [vfpdef] {',' vfpdef ['=' test]}* [',' ['**' vfpdef [',']]]
+    (| vfpdef ['=' _ test] {',' vfpdef ['=' _ test]}* [',' [| '*' [vfpdef] {',' vfpdef ['=' _ test]}* [',' ['**' vfpdef [',']]]
     | '**' vfpdef [',']]]
-    | '*' [vfpdef] {',' vfpdef ['=' test]}* [',' ['**' vfpdef [',']]]
+    | '*' [vfpdef] {',' vfpdef ['=' _ test]}* [',' ['**' vfpdef [',']]]
     | '**' vfpdef [','])
     ;
 
@@ -659,8 +659,8 @@ arglist
 
 argument
     =
-    | test ':=' test
-    | test '=' test
+    | test ':=' _ test
+    | test '=' _ test
     | '**' test
     | '*' test
     | test [ comp_for]
