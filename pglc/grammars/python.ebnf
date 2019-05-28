@@ -33,21 +33,21 @@ single_input
 
 file_input
     =
-    {_ string _}*
-    {_ import_stmt ~ _}*
-    {_ stmt _}* _ ENDMARKER
+    premble:{_ string _}*
+    imports:{_ import_stmt ~ _}*
+    statements:{_ stmt _}* _ ENDMARKER
     ;
 
 
 eval_input
     =
-    testlist _ ENDMARKER
+    @:testlist _ ENDMARKER
     ;
 
 
 decorator
     =
-    '@' dotted_name ['(' ~ [arglist] _ ')'] nl
+    '@' name:dotted_name ['(' ~ arglist:[arglist] _ ')'] nl
     ;
 
 
@@ -59,68 +59,71 @@ decorators
 
 decorated
     =
-    decorators (classdef | funcdef | async_funcdef)
+    decorators:decorators def:(classdef | funcdef | async_funcdef)
     ;
 
 
 async_funcdef
     =
-    'async' funcdef
+    'async' def:funcdef
     ;
 
 
 funcdef
     =
-    'def' ~ name parameters ['->' test] ':' [TYPE_COMMENT ~] func_body_suite
+    'def' ~ name:name parameters:parameters
+    ['->' type:test] ':' [type:TYPE_COMMENT ~] body:func_body_suite
     ;
 
 
 parameters
     =
-    '(' _ [typedargslist] _ ')'
+    '(' _ arglist:[typedargslist] _ ')'
     ;
 
 
 typedargslist
     =
-    [typedposonlyargs ',']
+    [posargs:typedposonlyargs ',']
     (
-        | [typedargs] (typedvararg|typedarg) [',' _ [typedargs] (typedkwvararg|typedarg)]
-        | [typedargs] (typedkwvararg|typedarg)
-        | typedkwvararg
-        | typedvararg [[','] TYPE_COMMENT]
-        | typedargs
+        |
+            [args:typedargs] (vararg:typedvararg|args+:typedarg)
+            [',' _ [args:typedargs] args+:(typedkwvararg|typedarg)]
+        | [args:typedargs] (kwarg:typedkwvararg|args+:typedarg)
+        | args+:typedkwvararg
+        | varag:typedvararg [[','] TYPE_COMMENT]
+        | args:typedargs
     )
     |
-        typedposonlyargs [[','] TYPE_COMMENT]
+        posargs:typedposonlyargs [[','] TYPE_COMMENT]
     ;
 
 
 typedarg
     =
-    tfpdef ['='  _ test] &[[','] TYPE_COMMENT]
+    name:tfpdef ['='  _ value:test] &[[','] type:TYPE_COMMENT]
     ;
 
 
 typedargs
     =
-    {typedarg ',' [TYPE_COMMENT] _ }+
+    {@+:typedarg ',' [TYPE_COMMENT] _ }+
     ;
 
 typedposonlyargs
     =
-    [typedargs ','] '/'
+    [@+:typedargs ','] '/'
     ;
 
 typedvararg
     =
-    '*' !'*' ~ [tfpdef ~ &[[','] TYPE_COMMENT] ]
+    '*' !'*' ~ [def:tfpdef ~ &[[','] type:TYPE_COMMENT] ]
     ;
 
 
 typedkwvararg
     =
-    '**' ~ tfpdef ~ [[','] TYPE_COMMENT]
+    '**' ~ def:tfpdef ~ [[','] type:TYPE_COMMENT]
     ;
 
 __original_typedargslist
@@ -156,22 +159,24 @@ __original_typedargslist
 
 tfpdef
     =
-    name [':' ~ test]
+    name:name [':' ~ type:test]
     ;
 
 
 varargslist
     =
-    [posonlyargs ',']
+    [posargs:posonlyargs ',']
     (
-        | [args] (vararg|arg) [',' _ [args] (kwvararg|arg)]
-        | [args] (kwvararg|arg)
-        | kwvararg
-        | vararg [',']
-        | args
+        |
+            [args:args] (vararg:vararg|args+:arg)
+            [',' _ [args:args] (kwarg:kwvararg|args+:arg)]
+        | [args:args] (kwarg:kwvararg|args+:arg)
+        | kwarg:kwvararg
+        | vararg:vararg [',']
+        | args:args
     )
     |
-        posonlyargs [',']
+        posargs:posonlyargs [',']
     ;
 
 
@@ -183,31 +188,31 @@ vfpdef
 
 arg
     =
-    vfpdef ['=' _ test]
+    def:vfpdef ['=' _ value:test]
     ;
 
 
 args
     =
-    {arg ',' _ }+
+    {@+:arg ',' _ }+
     ;
 
 
 posonlyargs
     =
-    [args ','] '/'
+    [@+:args ','] '/'
     ;
 
 
 vararg
     =
-    '*' !'*' ~ test
+    '*' !'*' ~ @:test
     ;
 
 
 kwvararg
     =
-    '**' ~ test
+    '**' ~ @:test
     ;
 
 
@@ -236,7 +241,7 @@ stmt
 
 simple_stmt
     =
-    small_stmt {';' _ ~ small_stmt}* [';'] nl
+    @+:small_stmt {';' _ ~ @+:small_stmt}* [';'] nl
     ;
 
 
@@ -261,18 +266,20 @@ string_stmt
 
 expr_stmt
     =
-    testlist_star_expr
+    exp+:testlist_star_expr
     (
-          annassign
-        | augassign (yield_expr | testlist)
-        | [{'=' (yield_expr | testlist_star_expr)}+ [TYPE_COMMENT]]
+          op:annassign
+        | op:augassign value:(yield_expr | testlist)
+        # FIXME: need to figure this out
+        | {'=' exp+:(yield_expr | testlist_star_expr)}+ [TYPE_COMMENT]
+        | ()
     )
     ;
 
 
 annassign
     =
-    ':' test ['=' ~ (yield_expr | testlist)]
+    ':' type:test ['=' ~ value:(yield_expr | testlist)]
     ;
 
 
@@ -302,7 +309,7 @@ augassign
 
 del_stmt
     =
-    'del' ~ exprlist
+    'del' ~ @:exprlist
     ;
 
 
@@ -332,7 +339,7 @@ continue_stmt
 
 return_stmt
     =
-    'return' ~ [testlist_star_expr]
+    'return' ~ @:[testlist_star_expr]
     ;
 
 
@@ -344,7 +351,7 @@ yield_stmt
 
 raise_stmt
     =
-    'raise' ~ [test ['from' ~ test]]
+    'raise' ~ [target:test ['from' ~ from:test]]
     ;
 
 
@@ -356,67 +363,67 @@ import_stmt
 
 import_name
     =
-    'import' ~ dotted_as_names
+    'import' ~ @:dotted_as_names
     ;
 
 
 import_from
     =
-    'from' ~ ({'.' | '...'}* dotted_name | {'.' | '...'}+)
+    'from' ~ (up:{'.' | '...'}* parent:dotted_name | up:{'.' | '...'}+)
     'import' ~
     (
           '*' ~
-        | '(' _ ~ import_as_names _ ')'
-        | import_as_names
+        | '(' _ ~ modules:import_as_names _ ')'
+        | modules:import_as_names
     )
     ;
 
 
 import_as_name
     =
-    name ['as' ~ name]
+    name:name ['as' ~ as:name]
     ;
 
 
 dotted_as_name
     =
-    dotted_name ['as' ~ name]
+    name:dotted_name ['as' ~ as:name]
     ;
 
 
 import_as_names
     =
-    import_as_name {',' _ ~ import_as_name}* [',' ~]
+    @+:import_as_name {',' _ @+:import_as_name}* [',' ~]
     ;
 
 
 dotted_as_names
     =
-    dotted_as_name {',' ~ dotted_as_name}*
+    @+:dotted_as_name {',' @+:dotted_as_name}*
     ;
 
 
 dotted_name
     =
-    name {_ '.' _ ~ name}*
+    @+:name {_ '.' _ ~ @+:name}*
     ;
 
 
 global_stmt
     =
-    'global' ~ name {',' name}*
+    'global' ~ @+:name {',' @+:name}*
     ;
 
 
 nonlocal_stmt
     =
-    'nonlocal' ~ name {',' ~ name}*
+    'nonlocal' ~ @+:name {',' ~ @+:name}*
     ;
 
 
 assert_stmt
     =
-    'assert' test [',' test]
+    'assert' @+:test [',' @+:test]
     ;
 
 
@@ -436,79 +443,85 @@ compound_stmt
 
 async_stmt
     =
-    'async' ~ (funcdef | with_stmt | for_stmt)
+    'async' ~ @:(funcdef | with_stmt | for_stmt)
     ;
 
 
 if_stmt
     =
-    'if' ~ namedexpr_test ':' suite
-    {EQDENT 'elif' ~ namedexpr_test ':' suite}*
-    [EQDENT 'else' ~ ':' suite]
+    'if' ~ condition:namedexpr_test ':' body:suite
+    {EQDENT 'elif' ~ elif+:namedexpr_test ':' suite}*
+    [EQDENT 'else' ~ ':' else:suite]
     ;
 
 
 while_stmt
     =
-    'while' ~ namedexpr_test ':' suite
-    [EQDENT 'else' ~ ':' suite]
+    'while' ~ condition:namedexpr_test ':' suite
+    [EQDENT 'else' ~ ':' else:suite]
     ;
 
 
 for_stmt
     =
-    'for' ~ exprlist 'in' ~ testlist ':' ~ [TYPE_COMMENT ~] suite
-    [EQDENT 'else' ~ ':' suite]
+    'for' ~ exp:exprlist 'in' ~ target:testlist ':' ~ [TYPE_COMMENT ~] body:suite
+    [EQDENT 'else' ~ ':' else:suite]
     ;
 
 
 try_stmt
     =
-    'try' ~ ':' suite
+    'try' ~ ':' body:suite
     (
-            {EQDENT except_clause ~ ':' suite}+ ~
-            [EQDENT 'else' ~ ':' suite]
-            [EQDENT 'finally' ~ ':' suite]
+            {EQDENT except_clause ~ ':' except:suite}+ ~
+            [EQDENT 'else' ~ ':' else:suite]
+            [EQDENT 'finally' ~ ':' finally:suite]
         |
-            EQDENT 'finally' ~ ':' suite
+            EQDENT 'finally' ~ ':' finally:suite
     )
     ;
 
 
 with_stmt
     =
-    'with' ~ with_item {',' with_item}* ':' [TYPE_COMMENT] suite
+    'with' ~ item+:with_item {',' item+:with_item}* ':'
+    type:[TYPE_COMMENT] body:suite
     ;
 
 
 with_item
     =
-    test ['as' expr]
+    value:test ['as' as:expr]
     ;
 
 
 except_clause
     =
-    'except' ~ [test ['as' name]]
+    'except' ~ [value:test ['as' as:name]]
     ;
 
 
 suite
     =
-      nl ~ INDENT stmt ~ {EQDENT stmt ~}* ~ DEDENT
-    | simple_stmt
+      nl ~ INDENT stmpt+:stmt ~ {EQDENT stmt+:stmt ~}* ~ DEDENT
+    | stmpt+:simple_stmt
     ;
 
 
 namedexpr_test
     =
-    test [':=' ~ test]
+    name:test [':=' ~ value:test]
     ;
 
 
 test
     =
-    lambdef | or_test [_ 'if' _ or_test _ 'else' ~  _ ~ test ]
+    lambdef | ordef
+    ;
+
+ordef
+    =
+    value:or_test [_ 'if' _ condition:or_test _ 'else' ~  _ ~ else:test ]
     ;
 
 
@@ -520,37 +533,38 @@ test_nocond
 
 lambdef
     =
-    'lambda' ~ [varargslist] ':' _ test
+    'lambda' ~ [args:varargslist] ':' _ exp:test
     ;
 
 
 lambdef_nocond
     =
-    'lambda' [varargslist] ':' test_nocond
+    'lambda' [args:varargslist] ':' exp:test_nocond
     ;
 
 
 or_test
     =
-    and_test {_ 'or' ~ _ and_test}*
+    exp:and_test {_ 'or' ~ _ exp:and_test}*
     ;
 
 
 and_test
     =
-    not_test {_ 'and' ~ _ not_test}*
+    exp:not_test {_ 'and' ~ _ exp:not_test}*
     ;
 
 
 not_test
     =
-    'not' not_test | comparison
+    'not' exp:not_test | @:comparison
     ;
 
 
 comparison
     =
-    expr {_ comp_op _ ~ expr}*
+    #FIXME: this needs work
+    exp:expr  comparison:{_ comp_op _ ~ expr}*
     ;
 
 
@@ -572,10 +586,11 @@ comp_op
 
 star_expr
     =
-    '*' ~ expr
+    '*' ~ @:expr
     ;
 
 
+# FIXME: use left/right recursion to fix associativity syntactically
 expr
     =
     xor_expr {'|' !'=' ~ _ xor_expr}*
@@ -686,7 +701,7 @@ sliceop
 
 exprlist
     =
-    (expr | star_expr) {',' (expr | star_expr)}* [',']
+    @+:(expr | star_expr) {',' @+:(expr | star_expr)}* [',']
     ;
 
 
