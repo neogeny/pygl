@@ -34,8 +34,6 @@ single_input
 file_input
     =
     encoding:[ENCODING]
-    premble:{_ string _}*
-    imports:{_ import_stmt ~ _}*
     statements:{_ stmt _}* _ ENDMARKER
     ;
 

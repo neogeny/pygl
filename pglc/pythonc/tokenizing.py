@@ -5,6 +5,8 @@ from tokenize import tokenize
 
 from tatsu.infos import PosLine, LineInfo
 from tatsu.tokenizing import Tokenizer
+from tatsu.util import debug
+from ..settings import DEBUG
 
 
 class PythonTokenizer(Tokenizer):
@@ -13,10 +15,29 @@ class PythonTokenizer(Tokenizer):
         self.text = text
         self.lines = text.splitlines(False)
 
-        # namedtuple(type string start end line)
-        with io.BytesIO(text) as f:
-            self.tokens = list(tokenize(f.readline))
+        self.tokens = []
         self._pos = 0
+        self._token_stream = None
+
+    def _get_token(self):
+        if self._token_stream is None:
+            self._token_stream = tokenize(io.BytesIO(self.text).readline)
+        try:
+            t = next(self._token_stream)
+            if DEBUG:
+                debug(t)
+            self.tokens.append(t)
+            return t
+        except StopIteration:
+            pass
+
+    def _ensure(self, pos):
+        t = None
+        while pos >= len(self.tokens):
+            t = self._get_token()
+            if not t:
+                break
+        return t
 
     @property
     def filename(self):
@@ -34,6 +55,7 @@ class PythonTokenizer(Tokenizer):
         return self.tokens[min(pos, len(self.tokens) - 1)]
 
     def goto(self, pos):
+        self._ensure(pos)
         self._pos = min(pos, len(self.tokens) - 1)
         return self.token
 
@@ -48,6 +70,7 @@ class PythonTokenizer(Tokenizer):
 
     @property
     def token(self):
+        self._ensure(self.pos)
         return self.tokens[self.pos]
 
     def _next(self):

@@ -8,7 +8,7 @@ from .tokenizing import PythonTokenizer
 
 @dataclass()
 class PythonSemantics:
-    tokenizer: PythonTokenizer
+    tokenizer: PythonTokenizer = None
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
