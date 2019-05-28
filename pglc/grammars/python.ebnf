@@ -27,12 +27,13 @@ start
 
 single_input
     =
-    compound_stmt nl | simple_stmt | nl
+    compound_stmt NEWLINE | simple_stmt | NEWLINE
     ;
 
 
 file_input
     =
+    encoding:[ENCODING]
     premble:{_ string _}*
     imports:{_ import_stmt ~ _}*
     statements:{_ stmt _}* _ ENDMARKER
@@ -45,9 +46,16 @@ eval_input
     ;
 
 
+ENCODING
+    =
+    'utf-8'
+    ;
+
+
+
 decorator
     =
-    '@' name:dotted_name ['(' ~ arglist:[arglist] _ ')'] nl
+    '@' name:dotted_name ['(' ~ arglist:[arglist] _ ')'] NEWLINE
     ;
 
 
@@ -241,7 +249,7 @@ stmt
 
 simple_stmt
     =
-    @+:small_stmt {';' _ ~ @+:small_stmt}* [';'] nl
+    @+:small_stmt {';' _ ~ @+:small_stmt}* [';'] NEWLINE
     ;
 
 
@@ -503,7 +511,7 @@ except_clause
 
 suite
     =
-      nl ~ INDENT stmpt+:stmt ~ {EQDENT stmt+:stmt ~}* ~ DEDENT
+      NEWLINE ~ INDENT stmpt+:stmt ~ {EQDENT stmt+:stmt ~}* ~ DEDENT
     | stmpt+:simple_stmt
     ;
 
@@ -787,14 +795,14 @@ yield_arg
 
 func_body_suite
     =
-      nl ~ [TYPE_COMMENT ~ nl] ~ INDENT stmt ~ {EQDENT stmt ~}* DEDENT
+      NEWLINE ~ [TYPE_COMMENT ~ NEWLINE] ~ INDENT stmt ~ {EQDENT stmt ~}* DEDENT
     | simple_stmt
     ;
 
 
 func_type_input
     =
-    func_type [nl] ENDMARKER
+    func_type [NEWLINE] ENDMARKER
     ;
 
 
@@ -926,18 +934,18 @@ FSTRING
     ;
 
 
-nl = /(?:(?:\s|\\\n)*(?:#[^\n]*?)?\n)+/ ~ | /\s*$/ $;
+NEWLINE = () ; # /(?:(?:\s|\\\n)*(?:#[^\n]*?)?\n)+/ ~ | /\s*$/ $;
 
-_ = /(?:(?:\s|\\\n)*(?:#[^\n]*?)?\n)*/ ;
-
-@nomemo
-INDENT = /(?:\s*(?:#[^\n]*?)?\n)*/  @:/^\s+/ ;
+_ = () ; # /(?:(?:\s|\\\n)*(?:#[^\n]*?)?\n)*/ ;
 
 @nomemo
-DEDENT = /(?:\s*(?:#[^\n]*?)?\n)*/  @:&/^\s*/ ;
+INDENT = () ; # /(?:\s*(?:#[^\n]*?)?\n)*/  @:/^\s+/ ;
 
 @nomemo
-EQDENT = /(?:\s*(?:#.[^\n]*?)?\n)*/ @:/^\s*/ ;
+DEDENT = () ; # /(?:\s*(?:#[^\n]*?)?\n)*/  @:&/^\s*/ ;
+
+@nomemo
+EQDENT = () ; # /(?:\s*(?:#.[^\n]*?)?\n)*/ @:/^\s*/ ;
 
 ENDMARKER = $ ;
 

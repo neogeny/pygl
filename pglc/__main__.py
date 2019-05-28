@@ -44,7 +44,7 @@ def main():
     filename = args['<file.py>']
     trace = args['--trace']
 
-    with Path(filename).open() as f:
+    with Path(filename).open('rb') as f:
         source = f.read()
 
     try:

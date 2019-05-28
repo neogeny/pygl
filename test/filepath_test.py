@@ -34,12 +34,8 @@ def _stem(value):
 
 
 def load_filepath(filepath):
-    try:
-        with filepath.open('rt') as f:
-            return f.read()
-    except UnicodeDecodeError:
-        with filepath.open('rb') as f:
-            return f.read()
+    with filepath.open('rb') as f:
+        return f.read()
 
 
 @pytest.mark.parametrize("filepath", cpython_python_sources, ids=_stem)

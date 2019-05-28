@@ -1,17 +1,14 @@
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+import token
 
-from tatsu.tokenizing import Tokenizer
 from tatsu.exceptions import FailedSemantics
-from tatsu.util import debug
 
-from ..settings import DEBUG
+from .tokenizing import PythonTokenizer
 
 
 @dataclass()
 class PythonSemantics:
-    indent_levels: List[int] = field(default_factory=list, init=False)
-    tokenizer: Tokenizer = None
+    tokenizer: PythonTokenizer
 
     def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
@@ -19,34 +16,23 @@ class PythonSemantics:
     def error(self, msg):
         raise FailedSemantics(msg)
 
-    def current_indent(self):
-        return self.indent_levels[-1] if self.indent_levels else 0  # pylint: disable=E1136
+    def _match_type(self, type):
+        if not self.tokenizer.matchtype(type):
+            self.error(f'Expecting {type}')
+        return True
+
+    def _(self, _):
+        self.tokenizer.eat_comments()
+
+    def NEWLINE(self, ast):
+        return self._match_type(token.NEWLINE)
 
     def INDENT(self, ast):
-        if DEBUG:
-            debug('INDENT', self.indent_levels, '"%s"' % ast)
-        indent = len(ast.strip('\r\n'))
-        prev = self.current_indent()
-        if not indent or indent <= prev:
-            self.error('Expecting INDENT')
-        self.indent_levels.append(indent)
+        return self._match_type(token.INDENT)
 
     def DEDENT(self, ast):
-        if self.tokenizer.atend():
-            return
-        if DEBUG:
-            debug('DEDENT', self.indent_levels, '"%s"' % ast)
-        indent = len(ast.strip('\r\n'))
-        prev = self.current_indent()
-        if indent < prev:
-            self.indent_levels.pop()
-        elif not self.tokenizer.atend():
-            self.error('Expecting DEDENT')
+        return self._match_type(token.DEDENT)
 
     def EQDENT(self, ast):
-        if DEBUG:
-            debug('EQDENT', self.indent_levels, '"%s"' % ast)
-        indent = len(ast.strip('\r\n'))
-        prev = self.current_indent()
-        if not self.tokenizer.atend() and indent != prev:
-            self.error('Unexpected change of INDENT')
+        if self.tokenizer.token.type in (token.INDENT, token.DEDENT):
+            self.error('INDENT/DEDENT')

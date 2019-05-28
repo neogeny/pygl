@@ -6,7 +6,7 @@ file_tests:
 		~/**/tatsu/tatsu/**/*.py \
 		-i "*bad*"
 
-exitfirst_file_tests:
+exitfirst:
 	python -Oum test.parse -s -x \
 		~/cpython/**/*.py \
 		-i "*bad*"
