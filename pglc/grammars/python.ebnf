@@ -78,7 +78,7 @@ async_funcdef
 funcdef
     =
     'def' ~ name:name parameters:parameters
-    ['->' type:test] ':' [type:TYPE_COMMENT ~] body:func_body_suite
+    ['->' type:test] ':' ~ [type:TYPE_COMMENT ~] body:func_body_suite
     ;
 
 
@@ -165,7 +165,7 @@ __original_typedargslist
 
 tfpdef
     =
-    name:name [':' ~ type:test]
+    name:name [ ':' ~ type:test]
     ;
 
 
@@ -285,7 +285,7 @@ expr_stmt
 
 annassign
     =
-    ':' type:test ['=' ~ value:(yield_expr | testlist)]
+    ':' ~ type:test ['=' ~ value:(yield_expr | testlist)]
     ;
 
 
@@ -455,42 +455,42 @@ async_stmt
 
 if_stmt
     =
-    'if' ~ condition:namedexpr_test ':' body:suite
-    {EQDENT 'elif' ~ elif+:namedexpr_test ':' suite}*
-    [EQDENT 'else' ~ ':' else:suite]
+    'if' ~ condition:namedexpr_test ':' ~ body:suite
+    {EQDENT 'elif' ~ elif+:namedexpr_test ':' ~ suite}*
+    [EQDENT 'else' ~ ':' ~ else:suite]
     ;
 
 
 while_stmt
     =
-    'while' ~ condition:namedexpr_test ':' suite
-    [EQDENT 'else' ~ ':' else:suite]
+    'while' ~ condition:namedexpr_test ':' ~ suite
+    [EQDENT 'else' ~ ':' ~ else:suite]
     ;
 
 
 for_stmt
     =
     'for' ~ exp:exprlist 'in' ~ target:testlist ':' ~ [TYPE_COMMENT ~] body:suite
-    [EQDENT 'else' ~ ':' else:suite]
+    [EQDENT 'else' ~ ':' ~ else:suite]
     ;
 
 
 try_stmt
     =
-    'try' ~ ':' body:suite
+    'try' ~ ':' ~ body:suite
     (
-            {EQDENT except_clause ~ ':' except:suite}+ ~
-            [EQDENT 'else' ~ ':' else:suite]
-            [EQDENT 'finally' ~ ':' finally:suite]
+            {EQDENT except_clause ~ ':' ~ except:suite}+ ~
+            [EQDENT 'else' ~ ':' ~ else:suite]
+            [EQDENT 'finally' ~ ':' ~ finally:suite]
         |
-            EQDENT 'finally' ~ ':' finally:suite
+            EQDENT 'finally' ~ ':' ~ finally:suite
     )
     ;
 
 
 with_stmt
     =
-    'with' ~ item+:with_item {',' item+:with_item}* ':'
+    'with' ~ item+:with_item {',' item+:with_item}* ':' ~
     type:[TYPE_COMMENT] body:suite
     ;
 
@@ -539,13 +539,13 @@ test_nocond
 
 lambdef
     =
-    'lambda' ~ [args:varargslist] ':' _ exp:test
+    'lambda' ~ [args:varargslist] ':' ~ _ exp:test
     ;
 
 
 lambdef_nocond
     =
-    'lambda' [args:varargslist] ':' exp:test_nocond
+    'lambda' [args:varargslist] ':' ~ exp:test_nocond
     ;
 
 
@@ -695,13 +695,13 @@ subscriptlist
 
 subscript
     =
-    [test] ':' _ ~ [test] [sliceop] | test
+    [test] ':' ~ _ ~ [test] [sliceop] | test
     ;
 
 
 sliceop
     =
-    ':' _ ~ [test]
+    ':' ~ _ ~ [test]
     ;
 
 
@@ -719,8 +719,8 @@ testlist
 
 dictorsetmaker
     =
-        (test ':' _ test | '**' expr) _
-        (comp_for | {',' _ (test ':' _ test | '**' expr) ~ }* [','])
+        (test ':' ~ _ test | '**' expr) _
+        (comp_for | {',' _ (test ':' ~ _ test | '**' expr) ~ }* [','])
     |
         (test | star_expr) _
         (comp_for | {','  _ (test | star_expr) ~ }* [','])
@@ -729,7 +729,7 @@ dictorsetmaker
 
 classdef
     =
-    'class' ~ name ['(' ~ [arglist] _ ')'] ':' suite
+    'class' ~ name ['(' ~ [arglist] _ ')'] ':' ~ suite
     ;
 
 
