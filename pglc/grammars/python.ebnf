@@ -102,8 +102,9 @@ parameter_list_no_posonly
 
 parameter_list_starargs
     =
-      '*' [parameter] {',' [typec] defparameter}* [',' [typec] ['**' parameter [',' ~ [typec]]]]
-    | '**' parameter [',' ~ [typec]]
+    | '**' ~ parameter [',' ~ [typec]]
+    | '*' ~ [parameter] {',' [typec] defparameter}*
+      [',' [typec] ['**' ~ parameter [',' ~ [typec]]]]
     ;
 
 defparameter            = parameter  ['=' ~ expression] ;
@@ -208,12 +209,12 @@ argument_list
 
 positional_arguments
     =
-    ['*'] expression {',' ['*'] expression}*
+    ['*' !'*'] expression {',' ['*' !'*'] expression}*
     ;
 
 starred_and_keywords
     =
-    ('*' expression | keyword_item) {',' '*' expression | ',' keyword_item}*
+    ('*' !'*' expression | keyword_item) {',' '*' !'*' expression | ',' keyword_item}*
     ;
 
 keywords_arguments
