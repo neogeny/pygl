@@ -1,11 +1,11 @@
 all: file_tests
 
 file_tests:
-	python -OOum test.parse -s  \
+	python -OOum test.parse \
 		./data/*/**/**/*.py \
-		-i "test*"
+		-i "**/cpython/**/test/*"
 
 exitfirst:
-	python -Oum test.parse -s -x \
+	python -Oum test.parse -x \
 		./data/*/**/**/*.py \
-		-i "test*"
+		-i "**/cpython/**/test/*"
