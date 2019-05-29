@@ -27,7 +27,7 @@ start
 
 single_input
     =
-    compound_stmt NEWLINE | simple_stmt | NEWLINE
+    compound_stmt NEWLINE  | simple_stmt | NEWLINE
     ;
 
 
@@ -509,7 +509,7 @@ except_clause
 
 suite
     =
-      NEWLINE ~ INDENT stmpt+:stmt ~ {EQDENT stmt+:stmt ~}* ~ DEDENT
+      NEWLINE  ~ INDENT stmpt+:stmt ~ {EQDENT stmt+:stmt ~}* ~ DEDENT
     | stmpt+:simple_stmt
     ;
 
@@ -793,7 +793,7 @@ yield_arg
 
 func_body_suite
     =
-      NEWLINE ~ [TYPE_COMMENT ~ NEWLINE] ~ INDENT stmt ~ {EQDENT stmt ~}* DEDENT
+      NEWLINE  ~ [TYPE_COMMENT ~ NEWLINE ] ~ INDENT stmt ~ {EQDENT stmt ~}* DEDENT
     | simple_stmt
     ;
 
