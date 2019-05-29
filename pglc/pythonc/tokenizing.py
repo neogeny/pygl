@@ -10,7 +10,7 @@ from tatsu.util import debug
 from ..settings import DEBUG
 
 
-MAX_LOOKBACK = 8 * 1024
+MAX_LOOKBACK = 32 * 1024
 
 
 class PythonTokenizer(Tokenizer):
