@@ -81,7 +81,39 @@ parameters
     ;
 
 
-typedargslist
+# NOTE: this version is from the reference docs, adding TYPE_COMMENT
+#       https://docs.python.org/3.8/reference/compound_stmts.html#function-definitions
+typedargslist = parameter_list ;
+
+
+parameter_list
+    =
+      defparameter {',' [typec] defparameter}* ',' [typec] '/' ~ [',' [parameter_list_no_posonly]]
+    | parameter_list_no_posonly
+    ;
+
+
+parameter_list_no_posonly
+    =
+      defparameter {',' [typec] defparameter }* [',' [typec] [parameter_list_starargs]]
+    | parameter_list_starargs
+    ;
+
+parameter_list_starargs
+    =
+      '*' [parameter] {',' [typec] defparameter}* [',' [typec] ['**' parameter [',' ~ [typec]]]]
+    | '**' parameter [',' ~ [typec]]
+    ;
+
+defparameter            = parameter  ['=' ~ expression] ;
+parameter               = identifier [':' ~ expression] ;
+identifier              = name;
+expression              = test;
+typec                   = TYPE_COMMENT ~ ;
+
+
+# FIXME: this was an attempt to clean up the rules from Grammar/Grammar
+__second_version_typedargslist
     =
     [posargs:typedposonlyargs ',']
     (
@@ -125,6 +157,8 @@ typedkwvararg
     '**' ~ def:tfpdef ~ [[','] type:TYPE_COMMENT]
     ;
 
+
+# FIXME: these are the rules bootstrapped from Grammar/Grammar
 __original_typedargslist
     =
         '**' ~ tfpdef [','] [TYPE_COMMENT]
