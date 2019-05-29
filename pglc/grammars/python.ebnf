@@ -44,13 +44,6 @@ eval_input
     ;
 
 
-ENCODING
-    =
-    'utf-8'
-    ;
-
-
-
 decorator
     =
     '@' name:dotted_name ['(' ~ arglist:[arglist] _ ')'] NEWLINE
@@ -951,4 +944,12 @@ TYPE_COMMENT
     =
     /\s*#\s*type:.*$/
     ;
+
+
+ENCODING
+    =
+    /[-_\w]+/
+    ;
+
+
 
