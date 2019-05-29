@@ -1,5 +1,6 @@
 # local copy of TatSu
 tatsu
+data/
 
 # local settings
 **/settings/local*
