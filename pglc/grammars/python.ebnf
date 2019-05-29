@@ -247,7 +247,7 @@ stmt
 
 simple_stmt
     =
-    @+:small_stmt {';' _ ~ @+:small_stmt}* [';'] NEWLINE
+    @+:small_stmt {';' _ @+:small_stmt ~}* [';' ~] NEWLINE
     ;
 
 
