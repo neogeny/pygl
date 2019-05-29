@@ -44,4 +44,5 @@ def test_filepath(filepath, trace=False):
     source = load_filepath(filepath)
     assert source is not None
 
-    return parse(source, start='file_input', trace=trace, colorize=True)
+    _ = parse(source, start='file_input', trace=trace, colorize=True)
+    return True
