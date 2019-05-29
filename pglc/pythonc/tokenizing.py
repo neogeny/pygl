@@ -5,8 +5,12 @@ from tokenize import tokenize
 
 from tatsu.infos import PosLine, LineInfo
 from tatsu.tokenizing import Tokenizer
+from tatsu.collections import Tail
 from tatsu.util import debug
 from ..settings import DEBUG
+
+
+MAX_LOOKBACK = 32 * 1024
 
 
 class PythonTokenizer(Tokenizer):
@@ -15,7 +19,7 @@ class PythonTokenizer(Tokenizer):
         self.text = text
         self.lines = text.splitlines(False)
 
-        self.tokens = []
+        self.tokens = Tail(MAX_LOOKBACK)
         self._pos = 0
         self._token_stream = None
 
