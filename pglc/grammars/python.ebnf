@@ -81,7 +81,8 @@ parameters
     ;
 
 
-# NOTE: this version is from the reference docs, adding TYPE_COMMENT
+# NOTE:
+# This version is from the reference documentation, adding TYPE_COMMENT
 #       https://docs.python.org/3.8/reference/compound_stmts.html#function-definitions
 typedargslist = parameter_list ;
 
@@ -196,7 +197,39 @@ tfpdef
     ;
 
 
-varargslist
+varargslist = argument_list [',' ~];
+
+argument_list
+    =
+      positional_arguments [',' starred_and_keywords] [',' keywords_arguments]
+    | starred_and_keywords [',' keywords_arguments]
+    | keywords_arguments
+    ;
+
+positional_arguments
+    =
+    ['*'] expression {',' ['*'] expression}*
+    ;
+
+starred_and_keywords
+    =
+    ('*' expression | keyword_item) {',' '*' expression | ',' keyword_item}*
+    ;
+
+keywords_arguments
+    =
+    (keyword_item | '**' ~ expression) {',' keyword_item | ',' '**' ~ expression}*
+    ;
+
+
+keyword_item
+    =
+    identifier '=' ~ expression
+    ;
+
+
+# FIXME dropped rewrite
+__varargslist
     =
     [posargs:posonlyargs ',']
     (
