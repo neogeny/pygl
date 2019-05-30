@@ -116,8 +116,9 @@ class PythonTokenizer(Tokenizer):
     def matchtype(self, type):
         if self.token.type != type:
             return
+        s = self.token.string or token.tok_name[type]
         self.next()
-        return True
+        return s
 
     def posline(self, pos):
         t = self.at(pos)

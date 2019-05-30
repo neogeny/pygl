@@ -6,8 +6,9 @@ file_tests:
 		./data/* \
 		./data/** \
 		-i "**/cpython/**/test/data/**" \
-		-i "**/cpython/**/test/*/bad*" \
+		-i "**/cpython/**/test/bad*" \
 		-i ".[a-z]*" \
+		-i "test2to3" \
 		-i "build" \
 		-i "dist"
 

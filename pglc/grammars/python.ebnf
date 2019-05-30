@@ -880,14 +880,22 @@ typelist
     ;
 
 
+name = NAME ;
+
 @name
-name
+NAME = () ;
+
+@name
+_old_name
     =
     /[_]*\w[\w_]*/
     ;
 
+number = NUMBER ;
 
-number
+NUMBER = () ;
+
+_old_number
     =
     floatnumber
     | integer
@@ -952,7 +960,10 @@ n_string
     STRING
     ;
 
-STRING
+
+STRING = () ;
+
+_OLD_STRING
     =
     &/(r[bu]?|[bu]r?)?('''|""")/ ~
     /(?xs)
@@ -997,27 +1008,14 @@ NEWLINE = () ; # /(?:(?:\s|\\\n)*(?:#[^\n]*?)?\n)+/ ~ | /\s*$/ $;
 
 _ = () ; # /(?:(?:\s|\\\n)*(?:#[^\n]*?)?\n)*/ ;
 
-@nomemo
 INDENT = () ; # /(?:\s*(?:#[^\n]*?)?\n)*/  @:/^\s+/ ;
 
-@nomemo
 DEDENT = () ; # /(?:\s*(?:#[^\n]*?)?\n)*/  @:&/^\s*/ ;
 
-@nomemo
 EQDENT = () ; # /(?:\s*(?:#.[^\n]*?)?\n)*/ @:/^\s*/ ;
 
 ENDMARKER = $ ;
 
-TYPE_COMMENT
-    =
-    /\s*#\s*type:.*$/
-    ;
+TYPE_COMMENT = () ; # /\s*#\s*type:.*$/ ;
 
-
-ENCODING
-    =
-    /[-_\w]+/
-    ;
-
-
-
+ENCODING = () ;

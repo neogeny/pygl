@@ -17,12 +17,22 @@ class PythonSemantics:
         raise FailedSemantics(msg)
 
     def _match_type(self, type):
-        if not self.tokenizer.matchtype(type):
-            self.error(f'Expecting {type}')
-        return True
+        t = self.tokenizer.matchtype(type)
+        if not t:
+            self.error(f'Expecting {token.tok_name[type]}')
+        return t
 
     def _(self, _):
         self.tokenizer.eat_comments()
+
+    def NUMBER(self, ast):
+        return self._match_type(token.NUMBER)
+
+    def STRING(self, ast):
+        return self._match_type(token.STRING)
+
+    def NAME(self, ast):
+        return self._match_type(token.NAME)
 
     def NEWLINE(self, ast):
         return self._match_type(token.NEWLINE)
@@ -36,3 +46,9 @@ class PythonSemantics:
     def EQDENT(self, ast):
         if self.tokenizer.token.type in (token.INDENT, token.DEDENT):
             self.error('INDENT/DEDENT')
+
+    def ENCODING(self, ast):
+        return self._match_type(token.ENCODING)
+
+    def TYPE_COMMENT(self, ast):
+        return self._match_type(token.TYPE_COMMENT)
