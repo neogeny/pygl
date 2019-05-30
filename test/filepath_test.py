@@ -40,7 +40,6 @@ def load_filepath(filepath):
 
 @pytest.mark.parametrize("filepath", cpython_python_sources, ids=_stem)
 def test_filepath(filepath, trace=False):
-    sys.setrecursionlimit(4 * 8 * 1024)
     source = load_filepath(filepath)
     assert source is not None
 
