@@ -6,6 +6,7 @@ import token
 
 from tatsu.util import identity
 
+
 def group(*choices):
     return '(?:' + '|'.join(choices) + ')'
 
@@ -90,7 +91,7 @@ class Tok3nize8:
     def _scanre(self, pattern, offset=0):
         return re.match(pattern, self.text, self.pos + offset)
 
-    def _matchre(self, pattern)
+    def _matchre(self, pattern):
         matched = self._scanre(pattern)
         if matched:
             token = matched.group()
@@ -147,4 +148,5 @@ class Tok3nize8:
                 pass
             yield t
             last = t
-            if not t: break
+            if not t:
+                break
