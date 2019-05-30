@@ -8,5 +8,6 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.setrecursionlimit(4 * sys.getrecursionlimit())
+    sys.setrecursionlimit(64 * sys.getrecursionlimit())
+    print(sys.getrecursionlimit(), 'recursionlimit', file=sys.stderr)
     main()
