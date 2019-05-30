@@ -4,11 +4,11 @@ file_tests:
 	python -OOum test.parse \
 		~/cpython/*/**/**/*.py \
 		./data/*/**/**/*.py \
-		-i "**/cpython/**/test*/*"
+		-i "**/cpython/**/test/**"
 
 
 exitfirst:
 	python -Oum test.parse -x \
 		~/cpython/*/**/**/*.py \
 		./data/*/**/**/*.py \
-		-i "**/cpython/**/test*/*"
+		-i "**/cpython/**/test/**"
