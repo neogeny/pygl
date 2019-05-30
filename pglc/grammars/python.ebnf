@@ -114,52 +114,6 @@ expression              = test;
 typec                   = TYPE_COMMENT ~ ;
 
 
-# FIXME: this was an attempt to clean up the rules from Grammar/Grammar
-__second_version_typedargslist
-    =
-    [posargs:typedposonlyargs ',']
-    (
-        |
-            [args:typedargs] (vararg:typedvararg|args+:typedarg)
-            [',' _ [args:typedargs] args+:(typedkwvararg|typedarg)]
-        | [args:typedargs] (kwarg:typedkwvararg|args+:typedarg)
-        | args+:typedkwvararg
-        | varag:typedvararg [[','] TYPE_COMMENT]
-        | args:typedargs
-    )
-    |
-        posargs:typedposonlyargs [[','] TYPE_COMMENT]
-    ;
-
-
-typedarg
-    =
-    name:tfpdef ['='  _ value:test] &[[','] type:TYPE_COMMENT]
-    ;
-
-
-typedargs
-    =
-    {@+:typedarg ',' [TYPE_COMMENT] _ }+
-    ;
-
-typedposonlyargs
-    =
-    [@+:typedargs] '/'
-    ;
-
-typedvararg
-    =
-    '*' !'*' ~ [def:tfpdef ~ &[[','] type:TYPE_COMMENT] ]
-    ;
-
-
-typedkwvararg
-    =
-    '**' ~ def:tfpdef ~ [[','] type:TYPE_COMMENT]
-    ;
-
-
 # FIXME: these are the rules bootstrapped from Grammar/Grammar
 __original_typedargslist
     =
@@ -198,93 +152,36 @@ tfpdef
     ;
 
 
-varargslist = argument_list [',' ~];
-
-argument_list
-    =
-      positional_arguments [',' starred_and_keywords] [',' keywords_arguments]
-    | starred_and_keywords [',' keywords_arguments]
-    | keywords_arguments
-    ;
-
-positional_arguments
-    =
-    ['*' !'*'] expression !'=' {',' ['*' !'*'] expression !'='}*
-    ;
-
-starred_and_keywords
-    =
-    ('*' !'*' expression | keyword_item) {',' '*' !'*' expression | ',' keyword_item}*
-    ;
-
-keywords_arguments
-    =
-    (keyword_item | '**' ~ expression) {',' keyword_item | ',' '**' ~ expression}*
-    ;
-
-
-keyword_item
-    =
-    identifier '=' ~ expression
-    ;
-
-
-# FIXME dropped rewrite
-__varargslist
-    =
-    [posargs:posonlyargs ',']
-    (
-        |
-            [args:args] (vararg:vararg|args+:arg)
-            [',' _ [args:args] (kwarg:kwvararg|args+:arg)]
-        | [args:args] (kwarg:kwvararg|args+:arg)
-        | kwarg:kwvararg
-        | vararg:vararg [',']
-        | args:args
-    )
-    |
-        posargs:posonlyargs [',']
-    ;
-
-
 vfpdef
     =
     name
     ;
 
 
-arg
+varargslist
     =
-    def:vfpdef ['=' _ value:test]
+      vararg {',' vararg}* ',' '/' ~ [',' [varargslist_no_posonly]]
+    | varargslist_no_posonly
+    ;
+
+varargslist_no_posonly
+    =
+      vararg {',' vararg }* [',' [varargslist_starargs]]
+    | varargslist_starargs
+    ;
+
+varargslist_starargs
+    =
+    | '**' ~ vararg [',' ~ ]
+    | '*' ~ [vararg] {',' vararg}*
+      [',' ['**' ~ vararg [',' ~ ]]]
     ;
 
 
-args
-    =
-    {@+:arg ',' _ }+
-    ;
+vararg = name  ['=' ~ expression] ;
 
 
-posonlyargs
-    =
-    [@+:args ','] '/'
-    ;
-
-
-vararg
-    =
-    '*' !'*' ~ @:test
-    ;
-
-
-kwvararg
-    =
-    '**' ~ @:test
-    ;
-
-
-
-_original_varargslist
+__original_varargslist
     =
     |   vfpdef ['=' _ test]
         {',' vfpdef ['=' _ test]}*
