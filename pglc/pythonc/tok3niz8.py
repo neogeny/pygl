@@ -137,8 +137,14 @@ class Tok3nize8:
                 return t
 
     def tokenize(self):
+        last = None
         while True:
             t = self.token()
+            if t.type == token.NL:
+                if last.type not in (token.NL, token.NEWLINE):
+                    t = TokenInfo(token.NEWLINE, t.string, t.start, t.end, t.line)
+            elif last.type in (token.NL, token.NEWLINE):
+                pass
             yield t
-            if not t:
-                break
+            last = t
+            if not t: break
