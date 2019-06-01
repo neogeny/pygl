@@ -750,7 +750,7 @@ encoding_decl
 yield_expr
     =
     'yield' ~
-    ('from' ~ from:test | args:testlist_star_expr)
+    ['from' ~ from:test | args:testlist_star_expr]
     ;
 
 
