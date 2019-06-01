@@ -1,0 +1,311 @@
+%prefix 'pglc'
+
+%header {
+}
+
+%source {
+}
+
+start <- (file_input / eval_input / single_input) !.
+
+single_input <- compound_stmt NEWLINE
+              / simple_stmt
+              / NEWLINE
+
+file_input <- (ENCODING)? (_ stmt _)* _ ENDMARKER
+
+eval_input <- testlist _ ENDMARKER
+
+decorator <- '@' dotted_name ('('  (arglist)? _ ')')? NEWLINE
+
+decorators <- (decorator)*
+
+decorated <- decorators (classdef / funcdef / async_funcdef)
+
+async_funcdef <- 'async' funcdef
+
+funcdef <- 'def'  name parameters ('->' test)? ':'  (TYPE_COMMENT)? func_body_suite
+
+parameters <- '(' _ (typedargslist)? _ ')'
+
+typedargslist <- parameter_list
+
+parameter_list <- parameter_list_posonly  (',' (parameter_list_no_posonly)?)?
+                / parameter_list_no_posonly
+
+parameter_list_posonly <- defparameter (',' (typec)? defparameter)* ',' (typec)? '/'
+
+parameter_list_no_posonly <- defparameter (',' (typec)? defparameter)* (',' (typec)? (parameter_list_starargs)?)?
+                           / parameter_list_starargs
+
+parameter_list_starargs <- '**'  parameter (','  (typec)?)?
+                         / '*'  (parameter)? (',' (typec)? defparameter)* (',' (typec)? ('**'  parameter (','  (typec)?)?)?)?
+
+defparameter <- parameter ('='  expression)?
+
+parameter <- identifier (':'  expression)?
+
+identifier <- name
+
+expression <- test
+
+typec <- TYPE_COMMENT
+
+varargslist <- posarglist  (',' (varargslist_no_posonly)?)?
+             / varargslist_no_posonly
+
+posarglist <- vararg (',' vararg)* ',' '/'
+
+varargslist_no_posonly <- vararg (',' vararg)* (',' (varargslist_starargs)?)?
+                        / varargslist_starargs
+
+varargslist_starargs <- '**'  vararg (',')?
+                      / '*'  (vararg)? (',' vararg)* (',' ('**'  vararg (',')?)?)?
+
+vararg <- name ('='  expression)?
+
+stmt <- compound_stmt
+      / simple_stmt
+
+simple_stmt <- small_stmt (';' _ small_stmt)* (';')? NEWLINE
+
+small_stmt <- expr_stmt
+            / flow_stmt
+            / del_stmt
+            / pass_stmt
+            / global_stmt
+            / nonlocal_stmt
+            / assert_stmt
+            / import_stmt
+
+expr_stmt <- testlist_star_expr (annassign / augassign (yield_expr / testlist) / ('=' (yield_expr / testlist_star_expr))* (TYPE_COMMENT)? / (&.)?)
+
+annassign <- ':'  test ('='  (yield_expr / testlist))?
+
+testlist_star_expr <- (test / star_expr) (',' _ (test / star_expr))* (',')?
+
+augassign <- '+='
+           / '-='
+           / '*='
+           / '@='
+           / '/='
+           / '%='
+           / '&='
+           / '|='
+           / '^='
+           / '<<='
+           / '>>='
+           / '**='
+           / '//='
+
+del_stmt <- 'del'  exprlist
+
+pass_stmt <- 'pass'
+
+flow_stmt <- break_stmt
+           / continue_stmt
+           / return_stmt
+           / raise_stmt
+           / yield_stmt
+
+break_stmt <- 'break'
+
+continue_stmt <- 'continue'
+
+return_stmt <- 'return'  (testlist_star_expr)?
+
+yield_stmt <- yield_expr
+
+raise_stmt <- 'raise'  (test ('from'  test)?)?
+
+import_stmt <- import_name
+             / import_from
+
+import_name <- 'import'  dotted_as_names
+
+import_from <- 'from'  (('.' / '...')* dotted_name / ('.' / '...')*) 'import'  ('*' / '(' _  import_as_names _ ')' / import_as_names)
+
+import_as_name <- name ('as'  name)?
+
+dotted_as_name <- dotted_name ('as'  name)?
+
+import_as_names <- import_as_name (',' _ import_as_name)* (',')?
+
+dotted_as_names <- dotted_as_name (',' dotted_as_name)*
+
+dotted_name <- name (_ '.' _  name)*
+
+global_stmt <- 'global'  name (',' name)*
+
+nonlocal_stmt <- 'nonlocal'  name (','  name)*
+
+assert_stmt <- 'assert' test (',' test)?
+
+compound_stmt <- if_stmt
+               / for_stmt
+               / while_stmt
+               / try_stmt
+               / with_stmt
+               / funcdef
+               / classdef
+               / decorated
+               / async_stmt
+
+async_stmt <- 'async'  (funcdef / with_stmt / for_stmt)
+
+if_stmt <- 'if'  namedexpr_test ':'  suite (EQDENT 'elif'  namedexpr_test ':'  suite)* (EQDENT 'else'  ':'  suite)?
+
+while_stmt <- 'while'  namedexpr_test ':'  suite (EQDENT 'else'  ':'  suite)?
+
+for_stmt <- 'for'  exprlist 'in'  testlist ':'  (TYPE_COMMENT)? suite (EQDENT 'else'  ':'  suite)?
+
+try_stmt <- 'try'  ':'  suite ((EQDENT except_clause  ':'  suite)*  (EQDENT 'else'  ':'  suite)? (EQDENT 'finally'  ':'  suite)? / EQDENT 'finally'  ':'  suite)
+
+with_stmt <- 'with'  with_item (',' with_item)* ':'  (TYPE_COMMENT)? suite
+
+with_item <- test ('as' expr)?
+
+except_clause <- 'except'  (test ('as' name)?)?
+
+suite <- NEWLINE  INDENT stmt  (EQDENT stmt)*  DEDENT
+       / simple_stmt
+
+namedexpr_test <- test (':='  test)?
+
+test <- lambdef
+      / ordef
+
+ordef <- or_test (_ 'if' _ or_test _ 'else'  _  test)?
+
+test_nocond <- or_test
+             / lambdef_nocond
+
+lambdef <- 'lambda'  (varargslist)? ':'  _ test
+
+lambdef_nocond <- 'lambda' (varargslist)? ':'  test_nocond
+
+or_test <- and_test (_ 'or'  _ and_test)*
+
+and_test <- not_test (_ 'and'  _ not_test)*
+
+not_test <- 'not' not_test
+          / comparison
+
+comparison <- expr (_ comp_op _  expr)*
+
+comp_op <- '=='
+         / '>='
+         / '<='
+         / '<>'
+         / '<' !'<'
+         / '>' !'>'
+         / '!='
+         / 'not' 'in'
+         / 'in'
+         / 'is' 'not'
+         / 'is'
+
+star_expr <- '*'  expr
+
+expr <- xor_expr ('|' !'='  _ xor_expr)*
+
+xor_expr <- and_expr ('^' !'='  _ and_expr)*
+
+and_expr <- shift_expr ('&' !'='  _ shift_expr)*
+
+shift_expr <- arith_expr (('<<' / '>>') !'='  _ arith_expr)*
+
+arith_expr <- term (_ ('+' / '-') !'='  _ term)*
+
+term <- factor (_ ('*' !'*' / '@' / '%' / '//' / '/') !'='  _ factor)*
+
+factor <- ('+' / '-' / '~')  factor
+        / power
+
+power <- atom_expr ('**' !'='  factor)?
+
+atom_expr <- ('await')? atom (trailer)*
+
+atom <- (('(' _ (yield_expr / testlist_comp)? _ ')' / '[' _ (testlist_comp)? _ ']' / '{' _ (dictorsetmaker)? _ '}' / string / number / '...' / 'None' / 'True' / 'False') / name)
+
+testlist_comp <- (namedexpr_test / star_expr) _ (comp_for / (',' _ (namedexpr_test / star_expr)  _)* (',')?)
+
+trailer <- '(' _  (arglist)? _ ')'
+         / '[' _  subscriptlist _ ']'
+         / _ '.'  _ name
+
+subscriptlist <- subscript (',' _ subscript _)* (',')?
+
+subscript <- (test)? ':'  _  (test)? (sliceop)?
+           / test
+
+sliceop <- ':'  _  (test)?
+
+exprlist <- (expr / star_expr) (',' (expr / star_expr))* (',')?
+
+testlist <- test (',' test)* (',')?
+
+dictorsetmaker <- (test ':'  _ test / '**' expr) _ (comp_for / (',' _ (test ':'  _ test / '**' expr))* (',')?)
+                / (test / star_expr) _ (comp_for / (',' _ (test / star_expr))* (',')?)
+
+classdef <- 'class'  name ('('  (arglist)? _ ')')? ':'  suite
+
+arglist <- _ argument (',' _ argument)* (','  _)?
+
+argument <- '**' test
+          / '*' test
+          / test ':='  _ test
+          / test '='  _ test
+          / test (comp_for)?
+
+comp_iter <- _ (comp_for / comp_if)
+
+sync_comp_for <- 'for'  exprlist _ 'in'  _ or_test _ (comp_iter)?
+
+comp_for <- _ ('async')? sync_comp_for
+
+comp_if <- 'if'  test_nocond (comp_iter)?
+
+yield_expr <- 'yield'  ('from'  test / testlist_star_expr)?
+
+func_body_suite <- NEWLINE  (TYPE_COMMENT  NEWLINE)?  INDENT stmt  (EQDENT stmt)* DEDENT
+                 / simple_stmt
+
+name <- NAME
+
+NAME <- (&.)?
+
+number <- NUMBER
+
+NUMBER <- (&.)?
+
+string <- (STRING)*
+
+STRING <- (&.)?
+
+NEWLINE <- (&.)?
+
+_ <- (&.)?
+
+INDENT <- (&.)?
+
+DEDENT <- (&.)?
+
+EQDENT <- (&.)?
+
+ENDMARKER <- !.
+
+TYPE_COMMENT <- (&.)?
+
+ENCODING <- (&.)?
+
+
+%%
+
+int main() {
+    int ret;
+    pglc_context_t *ctx = pglc_create(NULL);
+    while (pglc_parse(ctx, &ret));
+    pglc_destroy(ctx);
+}
+

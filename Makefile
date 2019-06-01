@@ -23,3 +23,12 @@ exitfirst:
 		-i ".[a-z]*" \
 		-i "build" \
 		-i "dist"
+
+
+packcc:
+	mkdir -p src
+	python -Oum pglc -c > src/pgl.peg
+	packcc -o pglc src/pgl.peg
+	mv pglc.* src
+	mkdir -p bin
+	gcc -o bin/pglc src/pglc.c
