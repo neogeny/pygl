@@ -28,17 +28,17 @@ exitfirst:
 parser: leg packcc
 
 leg:
-	mkdir -p src
-	python -Oum pglc --leg > src/pgl.leg
-	leg -o src/pglc.c src/pgl.leg
+	mkdir -p gensrc
+	python -Oum pglc --leg > gensrc/pgl.leg
+	leg -o gensrc/pglc.c gensrc/pgl.leg
 	mkdir -p bin
-	gcc src/pglc.c -o bin/pglc
+	gcc gensrc/pglc.c -o bin/pglc
 
 packcc:
-	mkdir -p src
-	python -Oum pglc --peg > src/pgl.peg
-	packcc -o pglc src/pgl.peg
-	mv pglc.* src
+	mkdir -p gensrc
+	python -Oum pglc --peg > gensrc/pgl.peg
+	packcc -o pglc gensrc/pgl.peg
+	mv pglc.* gensrc
 	mkdir -p bin
-	gcc src/pglc.c -o bin/pglc
+	gcc gensrc/pglc.c -o bin/pglc
 
