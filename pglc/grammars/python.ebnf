@@ -17,7 +17,7 @@
 
 start
     =
-    (
+    @:(
       file_input
     | eval_input
     | single_input
@@ -27,14 +27,14 @@ start
 
 single_input
     =
-    compound_stmt NEWLINE  | simple_stmt | NEWLINE
+    @:compound_stmt NEWLINE  | @:simple_stmt | NEWLINE
     ;
 
 
 file_input
     =
     encoding:[ENCODING]
-    statements:{_ stmt _}* _ ENDMARKER
+    stmt:{_ stmt _}* _ ENDMARKER
     ;
 
 
@@ -46,7 +46,7 @@ eval_input
 
 decorator
     =
-    '@' name:dotted_name ['(' ~ arglist:[arglist] _ ')'] NEWLINE
+    '@' name:dotted_name ['(' ~ args:[arglist] _ ')'] NEWLINE
     ;
 
 
@@ -64,20 +64,20 @@ decorated
 
 async_funcdef
     =
-    'async' def:funcdef
+    'async' @:funcdef
     ;
 
 
 funcdef
     =
-    'def' ~ name:name parameters:parameters
+    'def' ~ name:name args:parameters
     ['->' type:test] ':' ~ [type:TYPE_COMMENT ~] body:func_body_suite
     ;
 
 
 parameters
     =
-    '(' _ arglist:[typedargslist] _ ')'
+    '(' _ @:[typedargslist] _ ')'
     ;
 
 
@@ -89,10 +89,15 @@ typedargslist = parameter_list ;
 
 parameter_list
     =
-      defparameter {',' [typec] defparameter}* ',' [typec] '/' ~ [',' [parameter_list_no_posonly]]
+      parameter_list_posonly ~ [',' [parameter_list_no_posonly]]
     | parameter_list_no_posonly
     ;
 
+
+parameter_list_posonly
+    =
+    defparameter {',' [typec] defparameter}* ',' [typec] '/'
+    ;
 
 parameter_list_no_posonly
     =
@@ -107,8 +112,8 @@ parameter_list_starargs
       [',' [typec] ['**' ~ parameter [',' ~ [typec]]]]
     ;
 
-defparameter            = parameter  ['=' ~ expression] ;
-parameter               = identifier [':' ~ expression] ;
+defparameter            = param:parameter  ['=' ~ value:expression] ;
+parameter               = name:identifier [':' ~ type:expression] ;
 identifier              = name;
 expression              = test;
 typec                   = TYPE_COMMENT ~ ;
@@ -160,14 +165,19 @@ vfpdef
 
 varargslist
     =
-      vararg {',' vararg}* ',' '/' ~ [',' [varargslist_no_posonly]]
-    | varargslist_no_posonly
+      @:posarglist ~ [',' @:[varargslist_no_posonly]]
+    | @:varargslist_no_posonly
+    ;
+
+posarglist
+    =
+    @:vararg {',' @:vararg}* ',' '/'
     ;
 
 varargslist_no_posonly
     =
-      vararg {',' vararg }* [',' [varargslist_starargs]]
-    | varargslist_starargs
+      @:vararg {',' @:vararg }* [',' @:[varargslist_starargs]]
+    | @:varargslist_starargs
     ;
 
 varargslist_starargs
@@ -178,7 +188,7 @@ varargslist_starargs
     ;
 
 
-vararg = name  ['=' ~ expression] ;
+vararg = name:name  ['=' ~ value:expression] ;
 
 
 __original_varargslist
@@ -249,7 +259,7 @@ annassign
 
 testlist_star_expr
     =
-    (test | star_expr) {',' _ (test | star_expr)}* [',' ~]
+    @:(test | star_expr) {',' _ @:(test | star_expr)}* [',' ~]
     ;
 
 
@@ -315,7 +325,7 @@ yield_stmt
 
 raise_stmt
     =
-    'raise' ~ [target:test ['from' ~ from:test]]
+    'raise' ~ [test:test ['from' ~ from:test]]
     ;
 
 
@@ -455,19 +465,19 @@ with_stmt
 
 with_item
     =
-    value:test ['as' as:expr]
+    item:test ['as' as:expr]
     ;
 
 
 except_clause
     =
-    'except' ~ [value:test ['as' as:name]]
+    'except' ~ [test:test ['as' as:name]]
     ;
 
 
 suite
     =
-      NEWLINE  ~ INDENT stmpt+:stmt ~ {EQDENT stmt+:stmt ~}* ~ DEDENT
+      NEWLINE  ~ INDENT stmt+:stmt ~ {EQDENT stmt+:stmt ~}* ~ DEDENT
     | stmpt+:simple_stmt
     ;
 
@@ -509,26 +519,26 @@ lambdef_nocond
 
 or_test
     =
-    exp:and_test {_ 'or' ~ _ exp:and_test}*
+    value:and_test {_ 'or' ~ _ value:and_test}*
     ;
 
 
 and_test
     =
-    exp:not_test {_ 'and' ~ _ exp:not_test}*
+    value:not_test {_ 'and' ~ _ value:not_test}*
     ;
 
 
 not_test
     =
-    'not' exp:not_test | @:comparison
+    'not' value:not_test | @:comparison
     ;
 
 
 comparison
     =
     #FIXME: this needs work
-    exp:expr  comparison:{_ comp_op _ ~ expr}*
+    value:expr  op:{_ comp_op _ ~ value:expr}*
     ;
 
 
@@ -557,55 +567,55 @@ star_expr
 # FIXME: use left/right recursion to fix associativity syntactically
 expr
     =
-    xor_expr {'|' !'=' ~ _ xor_expr}*
+    value:xor_expr {'|' !'=' ~ _ value:xor_expr}*
     ;
 
 
 xor_expr
     =
-    and_expr {'^' !'=' ~ _ and_expr}*
+    value:and_expr {'^' !'=' ~ _ value:and_expr}*
     ;
 
 
 and_expr
     =
-    shift_expr {'&' !'=' ~ _ shift_expr}*
+    value:shift_expr {'&' !'=' ~ _ value:shift_expr}*
     ;
 
 
 shift_expr
     =
-    arith_expr {('<<' | '>>') !'=' ~ _ arith_expr}*
+    value:arith_expr {op:('<<' | '>>') !'=' ~ _ value:arith_expr}*
     ;
 
 
 arith_expr
     =
-    term {_ ('+' | '-') !'=' ~ _ term}*
+    value:term {_ op:('+' | '-') !'=' ~ _ op:term}*
     ;
 
 
 term
     =
-    factor {_ ('*' !'*' | '@' | '%' | '//' | '/') !'=' ~ _ factor}*
+    value:factor {_ op:('*' !'*' | '@' | '%' | '//' | '/') !'=' ~ _ value:factor}*
     ;
 
 
 factor
     =
-    ('+' | '-' | '~') ~ factor | power
+    op:('+' | '-' | '~') ~ value:factor | value:power
     ;
 
 
 power
     =
-    atom_expr ['**' !'=' ~ factor]
+    value:atom_expr ['**' !'=' ~ exp:factor]
     ;
 
 
 atom_expr
     =
-    ['await' ~] atom {trailer}*
+    await:['await' ~] value:atom {trailer}*
     ;
 
 
@@ -614,9 +624,9 @@ atom
     (
         |
             (
-                | '(' _ [yield_expr | testlist_comp] _ ')'
-                | '[' _ [testlist_comp] _ ']'
-                | '{' _ [dictorsetmaker] _ '}'
+                | '(' _ @:[yield_expr | testlist_comp] _ ')'
+                | '[' _ @:[testlist_comp] _ ']'
+                | '{' _ @:[dictorsetmaker] _ '}'
                 | string
                 | number
                 | '...'
@@ -641,25 +651,25 @@ testlist_comp
 
 trailer
     =
-    '(' _ ~ [arglist] _ ')' | '[' _ ~ subscriptlist _ ']' | _ '.' ~ _ name
+    '(' _ ~ args:[arglist] _ ')' | '[' _ ~ index:subscriptlist _ ']' | _ '.' ~ _ dotname:name
     ;
 
 
 subscriptlist
     =
-    subscript {','  _ subscript _ }* [',']
+    @+:subscript {','  _ @+:subscript _ }* [',']
     ;
 
 
 subscript
     =
-    [test] ':' ~ _ ~ [test] [sliceop] | test
+    index:[test] ':' ~ _ ~ to:[test] slice:[sliceop] | index:test
     ;
 
 
 sliceop
     =
-    ':' ~ _ ~ [test]
+    ':' ~ _ ~ @:[test]
     ;
 
 
@@ -671,7 +681,7 @@ exprlist
 
 testlist
     =
-    test {',' test}* [',']
+    @+:test {',' @+:test}* [',']
     ;
 
 
@@ -687,22 +697,22 @@ dictorsetmaker
 
 classdef
     =
-    'class' ~ name ['(' ~ [arglist] _ ')'] ':' ~ suite
+    'class' ~ name:name ['(' ~ args:[arglist] _ ')'] ':' ~ body:suite
     ;
 
 
 arglist
     =
-    _ argument {',' _ argument}* [',' ~ _]
+    _ @+:argument {',' _ @+:argument}* [',' ~ _]
     ;
 
 
 argument
     =
-    | test ':=' _ test
-    | test '=' _ test
     | '**' test
     | '*' test
+    | test ':=' ~ _ test
+    | test '=' ~ _ test
     | test [ comp_for]
     ;
 
@@ -715,19 +725,19 @@ comp_iter
 
 sync_comp_for
     =
-    'for' ~ exprlist _ 'in' ~ _ or_test _ [comp_iter]
+    'for' ~ vars:exprlist _ 'in' ~ test:_ or_test _ comp:[comp_iter]
     ;
 
 
 comp_for
     =
-    _ ['async' ~] sync_comp_for
+    _ async:['async' ~] comp:sync_comp_for
     ;
 
 
 comp_if
     =
-    'if' ~ test_nocond [comp_iter]
+    'if' ~ test:test_nocond comp:[comp_iter]
     ;
 
 
@@ -739,20 +749,16 @@ encoding_decl
 
 yield_expr
     =
-    'yield' ~ [yield_arg]
-    ;
-
-
-yield_arg
-    =
-    'from' ~ test | testlist_star_expr
+    'yield' ~
+    ('from' ~ from:test | args:testlist_star_expr)
     ;
 
 
 func_body_suite
     =
-      NEWLINE  ~ [TYPE_COMMENT ~ NEWLINE ] ~ INDENT stmt ~ {EQDENT stmt ~}* DEDENT
-    | simple_stmt
+      NEWLINE  ~ [type:TYPE_COMMENT ~ NEWLINE ] ~
+      INDENT stmt+:stmt ~ {EQDENT stmt+:stmt ~}* DEDENT
+    | stmt+:simple_stmt
     ;
 
 
@@ -764,16 +770,16 @@ func_type_input
 
 func_type
     =
-    '(' [typelist] ')' '->' ~ test
+    '(' args:[typelist] ')' '->' ~ ret:test
     ;
 
 
 typelist
     =
         | '**' ~ test
-        | test {',' ~ test}* ['**' ~ test]
         | '*' [test] {',' ~ test}* [',' '**' ~ test]
         | ',' ['*' ~ [test] {',' test}* [',' '**' ~ test]]
+        | test {',' ~ test}* ['**' ~ test]
     ;
 
 
@@ -847,7 +853,12 @@ floatnumber
     ;
 
 
-string
+string = {STRING}+ ;
+
+STRING = () ;
+
+
+__old_string
     =
     (f_string|n_string) ~ {_ (f_string|n_string)}*
     ;
@@ -858,7 +869,6 @@ n_string
     ;
 
 
-STRING = () ;
 
 _OLD_STRING
     =
