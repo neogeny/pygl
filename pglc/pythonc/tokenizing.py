@@ -1,6 +1,14 @@
 import re
 import io
 import token
+try:
+    from token import ENCODING, TYPE_COMMENT
+except ImportError:
+    TYPE_COMMENT = None
+    COMMENT = 61
+    NL = 62
+    ENCODING = 63
+
 from tokenize import tokenize
 
 from tatsu.infos import PosLine, LineInfo
@@ -88,14 +96,14 @@ class PythonTokenizer(Tokenizer):
         self.eat_comments()
 
     def eat_comments(self):
-        while self.token.type in (token.COMMENT, token.NL,):
+        while self.token.type in (COMMENT, NL,):
             self._next()
 
     def next_token(self):
         self.eat_comments()
 
     def match(self, word, ignorecase=False):
-        if self.token.type in (token.INDENT, token.DEDENT, token.COMMENT):
+        if self.token.type in (token.INDENT, token.DEDENT, COMMENT):
             return False
         if word == self.token.string:
             t = self.token.string

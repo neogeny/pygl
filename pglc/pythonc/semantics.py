@@ -1,9 +1,12 @@
 from dataclasses import dataclass
-import token
 
 from tatsu.exceptions import FailedSemantics
 
-from .tokenizing import PythonTokenizer
+from .tokenizing import (
+    PythonTokenizer,
+    token,
+    ENCODING, TYPE_COMMENT,
+)
 
 
 @dataclass()
@@ -19,7 +22,11 @@ class PythonSemantics:
     def _match_type(self, type):
         t = self.tokenizer.matchtype(type)
         if not t:
-            self.error(f'Expecting {token.tok_name[type]}')
+            name = token.tok_name.get(type)
+            if name:
+                self.error(f'Expecting {name}')
+            else:
+                self.error('Syntax error')
         return t
 
     def _(self, _):
@@ -48,7 +55,7 @@ class PythonSemantics:
             self.error('INDENT/DEDENT')
 
     def ENCODING(self, ast):
-        return self._match_type(token.ENCODING)
+        return self._match_type(ENCODING)
 
     def TYPE_COMMENT(self, ast):
-        return self._match_type(token.TYPE_COMMENT)
+        return self._match_type(TYPE_COMMENT)
