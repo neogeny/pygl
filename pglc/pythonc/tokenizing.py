@@ -1,13 +1,21 @@
+import sys
 import re
 import io
 import token
 try:
-    from token import ENCODING, TYPE_COMMENT
+    # since >= 3.8
+    from token import TYPE_COMMENT
 except ImportError:
     TYPE_COMMENT = None
-    COMMENT = 61
-    NL = 62
-    ENCODING = 63
+try:
+    from token import ENCODING, NL, COMMENT
+except ImportError:
+    if sys.version_info[:2] >= (3, 7):
+        raise
+    else:
+        COMMENT = 61
+        NL = 62
+        ENCODING = 63
 
 from tokenize import tokenize
 

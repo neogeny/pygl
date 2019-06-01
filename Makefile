@@ -14,7 +14,7 @@ file_tests:
 
 
 exitfirst:
-	PYTHONPATH=. python -Oum test.parse -x \
+	PYTHONPATH=. python -Oum test.parse -x -S \
 		~/cpython/**/*.py \
 		./data/* \
 		./data/** \
