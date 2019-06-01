@@ -1,7 +1,7 @@
 all: file_tests
 
 file_tests:
-	python -OOum test.parse \
+	PYTHONPATH=. python -OOum test.parse \
 		~/cpython/**/*.py \
 		./data/* \
 		./data/** \
@@ -14,7 +14,7 @@ file_tests:
 
 
 exitfirst:
-	python -Oum test.parse -x \
+	PYTHONPATH=. python -Oum test.parse -x \
 		~/cpython/**/*.py \
 		./data/* \
 		./data/** \
