@@ -8,7 +8,8 @@ from tatsu.exceptions import FailedParse
 from .bootstrap import bootstrap_python_peg_grammar
 from .pythonc import python_parser
 from .pythonc import parse
-from .peg.codegen import PEGCodeGenerator
+from .peg.packcc import PackCCCodeGenerator
+from .peg.leg import LEGCodeGenerator
 from . import settings
 
 USAGE = """\
@@ -16,10 +17,12 @@ USAGE = """\
 
 Usage:
     {name} [options] <file.py>
+    {name} --leg
     {name} --peg
 
 Options:
-    -c --peg   generate  PackCC grammar
+    -p --peg      generate a peg/PackCC grammar
+    -l --leg      generate a leg grammar
     -t --trace    enable tracing
     -h --help     print this help text
 """.format(name=__package__)
@@ -32,7 +35,13 @@ def print_python_peg_grammar():
 
 def generate_packcc_grammar():
     parser = python_parser()
-    grammar = PEGCodeGenerator().render(parser)
+    grammar = PackCCCodeGenerator().render(parser)
+    print(grammar)
+
+
+def generate_leg_grammar():
+    parser = python_parser()
+    grammar = LEGCodeGenerator().render(parser)
     print(grammar)
 
 
@@ -49,6 +58,9 @@ def _pending_cmdline_options():
 def main():
     args = docopt.docopt(str(USAGE), version=settings.__version__)
 
+    if args['--leg']:
+        generate_leg_grammar()
+        sys.exit()
     if args['--peg']:
         generate_packcc_grammar()
         sys.exit()

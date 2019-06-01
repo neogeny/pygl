@@ -8,8 +8,10 @@ THIS_MODULE = sys.modules[__name__]
 
 
 class PEGCodeGenerator(CodeGenerator):
-    def __init__(self):
-        super().__init__(modules=[THIS_MODULE])
+    def __init__(self, modules=None):
+        if modules is None:
+            modules = [THIS_MODULE]
+        super().__init__(modules=modules)
 
 
 class Any(ModelRenderer):
@@ -21,7 +23,12 @@ class BasedRule(ModelRenderer):
 
 
 class Choice(ModelRenderer):
-    template = '{options:: / :}'
+    choice_op = '/'
+    template = '{options:: @ :}'
+
+    def render_fields(self, fields):
+        self.template = self.template.replace('@', self.choice_op)
+        super().render_fields(fields)
 
 
 class Closure(ModelRenderer):
@@ -161,6 +168,8 @@ class RightJoin(ModelRenderer):
 
 
 class Rule(ModelRenderer):
+    choice_op = '/'
+
     template = '''\
     {name} <- {exp}
 
@@ -170,8 +179,7 @@ class Rule(ModelRenderer):
         super().render_fields(fields)
         exp = self.exp
         if isinstance(exp, grammars.Choice):
-            n = len(self.name) + 2
-            exp = ('\n' + n * ' ' + '/ ').join(
+            exp = '\n  ' + ('\n' + self.choice_op + ' ').join(
                 self.get_renderer(o).render() for o in exp.options
             )
             fields.update(exp=exp)
