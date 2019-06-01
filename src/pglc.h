@@ -3,16 +3,15 @@
 #ifndef PCC_INCLUDED__PGLC_H
 #define PCC_INCLUDED__PGLC_H
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct pglc_context_tag pglc_context_t;
+typedef struct pcc_context_tag pcc_context_t;
 
-pglc_context_t *pglc_create(void *auxil);
-int pglc_parse(pglc_context_t *ctx, int *ret);
-void pglc_destroy(pglc_context_t *ctx);
+pcc_context_t *pcc_create(void *auxil);
+int pcc_parse(pcc_context_t *ctx, int *ret);
+void pcc_destroy(pcc_context_t *ctx);
 
 #ifdef __cplusplus
 }

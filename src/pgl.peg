@@ -1,11 +1,3 @@
-%prefix 'pglc'
-
-%header {
-}
-
-%source {
-}
-
 start <- (file_input / eval_input / single_input) !.
 
 single_input <- compound_stmt NEWLINE
@@ -298,14 +290,4 @@ ENDMARKER <- !.
 TYPE_COMMENT <- (&.)?
 
 ENCODING <- (&.)?
-
-
-%%
-
-int main() {
-    int ret;
-    pglc_context_t *ctx = pglc_create(NULL);
-    while (pglc_parse(ctx, &ret));
-    pglc_destroy(ctx);
-}
 

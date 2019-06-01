@@ -25,10 +25,19 @@ exitfirst:
 		-i "dist"
 
 
+parser: packcc peg
+
 packcc:
-	mkdir -p src
-	python -Oum pglc -c > src/pgl.peg
 	packcc -o pglc src/pgl.peg
 	mv pglc.* src
 	mkdir -p bin
-	gcc -o bin/pglc src/pglc.c
+	gcc -c src/pglc.c -o bin/pglc
+
+peg:
+	peg -o src/pglc.c src/pgl.peg
+	mkdir -p bin
+	gcc -c src/pglc.c -o bin/pglc
+
+src/pgl.peg:
+	mkdir -p src
+	python -Oum pglc -c > src/pgl.peg

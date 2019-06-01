@@ -7,7 +7,7 @@ from tatsu.codegen import CodeGenerator
 THIS_MODULE = sys.modules[__name__]
 
 
-class PackCCCodeGenerator(CodeGenerator):
+class PEGCodeGenerator(CodeGenerator):
     def __init__(self):
         super().__init__(modules=[THIS_MODULE])
 
@@ -61,26 +61,28 @@ class Gather(ModelRenderer):
 
 
 class Grammar(ModelRenderer):
-    template = '''\
+    packcc_template = '''\
     %prefix '{name}'
-    
+
     %header {{
     }}
-    
+
     %source {{
     }}
-    
+
     {rules:::}
-    
+
     %%
-    
+
     int main() {{
         int ret;
         {name}_context_t *ctx = {name}_create(NULL);
         while ({name}_parse(ctx, &ret));
         {name}_destroy(ctx);
-    }} 
+    }}
     '''
+
+    template = '{rules:::}'
 
     def render_fields(self, fields):
         super().render_fields(fields)
@@ -161,7 +163,7 @@ class RightJoin(ModelRenderer):
 class Rule(ModelRenderer):
     template = '''\
     {name} <- {exp}
-    
+
     '''
 
     def render_fields(self, fields):
