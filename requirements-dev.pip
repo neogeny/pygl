@@ -5,6 +5,7 @@ git-pylint-commit-hook
 ipython
 mypy
 psutil
+py-spy
 pylint
 pytest
 pytest-parallel
