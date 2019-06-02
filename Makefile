@@ -25,7 +25,11 @@ exitfirst:
 		-i "dist"
 
 
-parser: leg packcc
+parser:
+	python -Oum pglc -g > pglc/parser/generated.py
+
+
+cparser: leg packcc
 
 leg:
 	mkdir -p gensrc

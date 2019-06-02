@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+from tatsu.contexts import ParseContext
 from tatsu.exceptions import FailedSemantics
 
 from .tokenizing import (
@@ -11,10 +12,12 @@ from .tokenizing import (
 
 @dataclass()
 class PythonSemantics:
+    ctx: ParseContext = None
     tokenizer: PythonTokenizer = None
 
-    def set_tokenizer(self, tokenizer):
-        self.tokenizer = tokenizer
+    def set_context(self, ctx):
+        self.ctx = ctx
+        self.tokenizer = ctx.tokenizer
 
     def error(self, msg):
         raise FailedSemantics(msg)
@@ -23,8 +26,9 @@ class PythonSemantics:
         t = self.tokenizer.matchtype(type)
         if not t:
             name = token.tok_name.get(type)
+            other = token.tok_name.get(self.tokenizer.current.type)
             if name:
-                self.error(f'Expecting {name}')
+                self.error(f'Expecting {name} (not {other})')
             else:
                 self.error('Syntax error')
         return t
@@ -39,7 +43,9 @@ class PythonSemantics:
         return self._match_type(token.STRING)
 
     def NAME(self, ast):
-        return self._match_type(token.NAME)
+        if self._match_type(token.NAME):
+            self.ctx.last_node = self.tokenizer.last_token.string
+            self.ctx._check_name()
 
     def NEWLINE(self, ast):
         return self._match_type(token.NEWLINE)

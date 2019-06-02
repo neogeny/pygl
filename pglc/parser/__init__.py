@@ -9,11 +9,27 @@ __parser = None
 
 
 def python_parser():
+    parser = generated_python_parser()
+    if parser:
+        return parser
+
     global __parser
     if __parser is None:
-        grammar = load_python_peg_grammar()
-        __parser = tatsu.compile(grammar)
+        __parser = model_python_parser()
     return __parser
+
+
+def generated_python_parser():
+    try:
+        from .generated import PythonParser
+        return PythonParser(tokenizercls=PythonTokenizer, semantics=PythonSemantics())
+    except ImportError:
+        pass
+
+
+def model_python_parser():
+    grammar = load_python_peg_grammar()
+    return tatsu.compile(grammar)
 
 
 def parse(source, filename='<unknown>', **kwargs):

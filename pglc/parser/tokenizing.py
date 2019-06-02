@@ -93,6 +93,11 @@ class PythonTokenizer(Tokenizer):
         self._ensure(self.pos)
         return self.tokens[self.pos]
 
+    @property
+    def last_token(self):
+        self._ensure(self.pos - 1)
+        return self.tokens[self.pos - 1]
+
     def _next(self):
         if self.atend():
             return None

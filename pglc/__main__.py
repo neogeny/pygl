@@ -4,10 +4,11 @@ from pathlib import Path
 import docopt
 
 from tatsu.exceptions import FailedParse
+from tatsu.codegen.python import PythonCodeGenerator
 
 from .bootstrap import bootstrap_python_peg_grammar
-from .pythonc import python_parser
-from .pythonc import parse
+from .parser import python_parser, model_python_parser
+from .parser import parse
 from .peg.packcc import PackCCCodeGenerator
 from .peg.leg import LEGCodeGenerator
 from . import settings
@@ -17,20 +18,28 @@ USAGE = """\
 
 Usage:
     {name} [options] <file.py>
+    {name} --gen
     {name} --leg
     {name} --peg
 
 Options:
-    -p --peg      generate a peg/PackCC grammar
-    -l --leg      generate a leg grammar
-    -t --trace    enable tracing
-    -h --help     print this help text
+    -g --gen       generate Python parser
+    -p --peg       generate a peg/PackCC grammar
+    -l --leg       generate a leg grammar
+    -t --trace     enable tracing
+    -h --help      print this help text
 """.format(name=__package__)
 
 
 def print_python_peg_grammar():
     parser = bootstrap_python_peg_grammar(trace=False)
     print(parser)
+
+
+def generate_python_parser():
+    parser = model_python_parser()
+    grammar = PythonCodeGenerator().render(parser)
+    print(grammar)
 
 
 def generate_packcc_grammar():
@@ -58,6 +67,9 @@ def _pending_cmdline_options():
 def main():
     args = docopt.docopt(str(USAGE), version=settings.__version__)
 
+    if args['--gen']:
+        generate_python_parser()
+        sys.exit()
     if args['--leg']:
         generate_leg_grammar()
         sys.exit()

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from pglc.pythonc import parse
+from pglc.parser import parse
 from pglc.settings import CPYTHON_PATH
 
 
