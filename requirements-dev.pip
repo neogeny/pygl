@@ -9,4 +9,5 @@ py-spy
 pylint
 pytest
 pytest-parallel
+snakeviz
 tox
