@@ -31,10 +31,15 @@ class PythonSemantics:
                 self.error(f'Expecting {name} (not {other})')
             else:
                 self.error('Syntax error')
+        self.ctx.last_node = t
         return t
 
     def _(self, _):
         self.tokenizer.eat_comments()
+
+    def name(self, ast):
+        self.ctx._check_name(ast)
+        return ast
 
     def NUMBER(self, ast):
         return self._match_type(token.NUMBER)
@@ -43,9 +48,7 @@ class PythonSemantics:
         return self._match_type(token.STRING)
 
     def NAME(self, ast):
-        if self._match_type(token.NAME):
-            self.ctx.last_node = self.tokenizer.last_token.string
-            self.ctx._check_name()
+        return self._match_type(token.NAME)
 
     def NEWLINE(self, ast):
         return self._match_type(token.NEWLINE)

@@ -43,7 +43,7 @@ def parse(source, filename='<unknown>', **kwargs):
     if semantics is None:
         semantics = PythonSemantics()
 
-    parser = python_parser()
+    parser = model_python_parser()
     return parser.parse(tokenizer, semantics=semantics, **kwargs)
 
 
