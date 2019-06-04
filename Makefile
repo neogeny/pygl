@@ -2,7 +2,7 @@ all: file_tests
 
 file_tests:
 	PYTHONPATH=. python -Om cProfile -o pglc.profile \
-	-m test.parse -S \
+	-m test.parse \
 		~/cpython/**/*.py \
 		./data/* \
 		./data/** \
