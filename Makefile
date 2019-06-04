@@ -1,7 +1,7 @@
 all: file_tests
 
 file_tests:
-	PYTHONPATH=. python -m test.parse \
+	PYTHONPATH=. python -Oum test.parse \
 		~/cpython/**/*.py \
 		./data/* \
 		./data/** \
@@ -25,7 +25,7 @@ exitfirst:
 		-i "dist"
 
 profile_tests:
-	PYTHONPATH=. python -Om cProfile -o pglc.profile \
+	PYTHONPATH=. python -Oum cProfile -o pglc.profile \
 	-m test.parse -S \
 		~/cpython/**/*.py \
 		./data/* \
