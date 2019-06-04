@@ -1,8 +1,7 @@
 all: file_tests
 
 file_tests:
-	PYTHONPATH=. python -Om cProfile -o pglc.profile \
-	-m test.parse \
+	PYTHONPATH=. python -m test.parse \
 		~/cpython/**/*.py \
 		./data/* \
 		./data/** \
@@ -22,6 +21,19 @@ exitfirst:
 		-i "**/cpython/**/test/data/**" \
 		-i "**/cpython/**/test/*/bad*" \
 		-i ".[a-z]*" \
+		-i "build" \
+		-i "dist"
+
+profile_tests:
+	PYTHONPATH=. python -Om cProfile -o pglc.profile \
+	-m test.parse -S \
+		~/cpython/**/*.py \
+		./data/* \
+		./data/** \
+		-i "**/cpython/**/test/data/**" \
+		-i "**/cpython/**/test/bad*" \
+		-i ".[a-z]*" \
+		-i "test2to3" \
 		-i "build" \
 		-i "dist"
 
