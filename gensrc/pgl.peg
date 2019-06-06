@@ -1,4 +1,4 @@
-%prefix 'pglc'
+%prefix 'pygl'
 
 %header {
 }
@@ -328,8 +328,8 @@ ENCODING <- (&.)?
 
 int main() {
     int ret;
-    pglc_context_t *ctx = pglc_create(NULL);
-    while (pglc_parse(ctx, &ret));
-    pglc_destroy(ctx);
+    pygl_context_t *ctx = pygl_create(NULL);
+    while (pygl_parse(ctx, &ret));
+    pygl_destroy(ctx);
 }
 

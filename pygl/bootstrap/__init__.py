@@ -1,6 +1,6 @@
 import sys
 
-from pglc.bootstrap import parser
+from pygl.bootstrap import parser
 
 
 def bootstrap_python_peg_grammar(trace=False):

@@ -4,7 +4,10 @@ from ..filepath_test import test_filepath
 
 
 def main():
-    generic_main(test_filepath)
+    try:
+        generic_main(test_filepath)
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == '__main__':

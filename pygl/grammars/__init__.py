@@ -2,7 +2,7 @@ import pkg_resources
 
 
 PYTHON_GRAMMAR = 'Grammar'
-PGLC_GRAMMAR = 'pglc.ebnf'
+PYGL_GRAMMAR = 'pygl.ebnf'
 PYTHON_PEG_GRAMMAR = 'python.ebnf'
 
 
@@ -17,7 +17,7 @@ def load_python_grammar():
 
 
 def load_plg_grammar():
-    return load_grammar(PGLC_GRAMMAR)
+    return load_grammar(PYGL_GRAMMAR)
 
 
 def load_python_peg_grammar():

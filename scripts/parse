@@ -2,4 +2,4 @@
 gvim $1
 export DEBUG=1
 export PYTHONPATH=.
-python -Oum pglc -t $* 2>&1 | less -FRX
+python -Oum pygl -t $* 2>&1 | less -FRX

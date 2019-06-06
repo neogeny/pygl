@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from pglc.parser import parse
-from pglc.settings import CPYTHON_PATH
+from pygl.parser import parse
+from pygl.settings import CPYTHON_PATH
 
 
 @pytest.fixture(scope="session")

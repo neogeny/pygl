@@ -25,7 +25,7 @@ exitfirst:
 		-i "dist"
 
 profile_tests:
-	PYTHONPATH=. python -Oum cProfile -o pglc.profile \
+	PYTHONPATH=. python -Oum cProfile -o pygl.profile \
 	-m test.parse -S \
 		~/cpython/**/*.py \
 		./data/* \
@@ -39,23 +39,23 @@ profile_tests:
 
 
 parser:
-	python -Oum pglc -g > pglc/parser/generated.py
+	python -Oum pygl -g > pygl/parser/generated.py
 
 
 cparser: leg packcc
 
 leg:
 	mkdir -p gensrc
-	python -Oum pglc --leg > gensrc/pgl.leg
-	leg -o gensrc/pglc.c gensrc/pgl.leg
+	python -Oum pygl --leg > gensrc/pgl.leg
+	leg -o gensrc/pygl.c gensrc/pgl.leg
 	mkdir -p bin
-	gcc gensrc/pglc.c -o bin/pglc
+	gcc gensrc/pygl.c -o bin/pygl
 
 packcc:
 	mkdir -p gensrc
-	python -Oum pglc --peg > gensrc/pgl.peg
-	packcc -o pglc gensrc/pgl.peg
-	mv pglc.* gensrc
+	python -Oum pygl --peg > gensrc/pgl.peg
+	packcc -o pygl gensrc/pgl.peg
+	mv pygl.* gensrc
 	mkdir -p bin
-	gcc gensrc/pglc.c -o bin/pglc
+	gcc gensrc/pygl.c -o bin/pygl
 

@@ -2,8 +2,8 @@
 // Created by Apalala on 2019-06-03.
 //
 
-#ifndef CPGLC_COLLECTIONS_H
-#define CPGLC_COLLECTIONS_H
+#ifndef CPYGL_COLLECTIONS_H
+#define CPYGL_COLLECTIONS_H
 
 typedef struct {
     int size, len;
@@ -19,4 +19,4 @@ void deque_push(deque_t* deque, void* value);
 void* deque_pop(deque_t* deque);
 
 
-#endif //CPGLC_COLLECTIONS_H
+#endif //CPYGL_COLLECTIONS_H

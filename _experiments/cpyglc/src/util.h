@@ -2,8 +2,8 @@
 // Created by Apalala on 2019-06-03.
 //
 
-#ifndef CPGLC_UTIL_H
-#define CPGLC_UTIL_H
+#ifndef CPYGL_UTIL_H
+#define CPYGL_UTIL_H
 
 #include "gc/gc.h"
 
@@ -16,4 +16,4 @@
 void _error(const char* msg);
 
 
-#endif //CPGLC_UTIL_H
+#endif //CPYGL_UTIL_H

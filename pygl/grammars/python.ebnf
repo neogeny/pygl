@@ -787,13 +787,14 @@ typelist
     ;
 
 
+@name
 name = NAME ;
 
+@nomemo
 keyword = !name NAME ;
 
 NAME = () ;
 
-@name
 _old_name
     =
     /[_]*\w[\w_]*/

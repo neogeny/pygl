@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from pglc.util import asjson, trim, indent
+from pygl.util import asjson, trim, indent
 
 
 @dataclass(repr=False)
@@ -223,7 +223,7 @@ class Grammar(_Node):
         rules = '\n\n'.join(trim(r.genpython()) for r in self.rules)
         result = trim('''
             import argparse
-            from pglc.context import ParseContext
+            from pygl.context import ParseContext
 
             class PythonParser(ParseContext):
             {rules}

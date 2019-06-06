@@ -3,7 +3,7 @@ from keyword import iskeyword
 from dataclasses import dataclass, field  # noqa
 from typing import List
 
-from pglc.bootstrap.model import Error, Void, Comment, Indent, Dedent
+from pygl.bootstrap.model import Error, Void, Comment, Indent, Dedent
 
 
 @dataclass(frozen=True)

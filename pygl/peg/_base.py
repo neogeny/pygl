@@ -94,7 +94,7 @@ class Grammar(ModelRenderer):
     def render_fields(self, fields):
         super().render_fields(fields)
         fields.update(
-            name='pglc',
+            name='pygl',
             rules=self.node.used_rules(),
         )
 
