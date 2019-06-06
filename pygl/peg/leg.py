@@ -24,7 +24,7 @@ class Grammar(_Grammar):
         %{{
            #include <stdio.h>     /* printf() */
            #include <stdlib.h>    /* atoi() */
-       %}}        
+       %}}
 
         {rules:::}
 
