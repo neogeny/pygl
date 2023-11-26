@@ -1,4 +1,4 @@
-import pkg_resources
+import importlib.resources
 
 
 PYTHON_GRAMMAR = 'Grammar'
@@ -8,8 +8,9 @@ PYTHON_PEG_GRAMMAR = 'python.ebnf'
 
 def load_grammar(name):
     package = f'{__package__}'
-    with pkg_resources.resource_stream(package, name) as stream:
-        return str(stream.read(), encoding='utf-8')
+    filepath = importlib.resources.files() / name
+    with filepath.open() as stream:
+        return stream.read()
 
 
 def load_python_grammar():
