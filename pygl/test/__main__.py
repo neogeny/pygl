@@ -1,6 +1,6 @@
 import sys
 from tatsu.util.testing import generic_main
-from ..filepath_test import test_filepath
+from test.filepath_test import test_filepath
 
 
 def main():
