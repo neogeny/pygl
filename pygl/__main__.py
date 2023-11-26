@@ -57,11 +57,7 @@ def generate_leg_grammar():
 def _pending_cmdline_options():
     bootstrap_python_peg_grammar(trace=False)
     print_python_peg_grammar()
-    try:
-        parser = python_parser()
-        print(parser)
-    except Exception as e:
-        print(e)
+    parser = python_parser()
 
 
 def main():

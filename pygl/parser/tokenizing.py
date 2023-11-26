@@ -98,6 +98,12 @@ class PythonTokenizer(Tokenizer):
         self._ensure(self.pos - 1)
         return self.tokens[self.pos - 1]
 
+    @property
+    def current(self):
+        if self.pos >= len(self.tokens):
+            return None
+        return self.tokens[self.pos - 1]
+
     def _next(self):
         if self.atend():
             return None

@@ -12,12 +12,7 @@ from .tokenizing import (
 
 @dataclass()
 class PythonSemantics:
-    ctx: ParseContext = None
-    tokenizer: PythonTokenizer = None
-
-    def set_context(self, ctx):
-        self.ctx = ctx
-        self.tokenizer = ctx.tokenizer
+    tokenizer: PythonTokenizer
 
     def error(self, msg):
         raise FailedSemantics(msg)
@@ -31,15 +26,10 @@ class PythonSemantics:
                 self.error(f'Expecting {name} (not {other})')
             else:
                 self.error('Syntax error')
-        self.ctx.last_node = t
         return t
 
     def _(self, _):
         self.tokenizer.eat_comments()
-
-    def name(self, ast):
-        self.ctx._check_name(ast)
-        return ast
 
     def NUMBER(self, ast):
         return self._match_type(token.NUMBER)

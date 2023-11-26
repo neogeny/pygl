@@ -22,7 +22,7 @@ def python_parser():
 def generated_python_parser():
     try:
         from .generated import PythonParser
-        return PythonParser(tokenizercls=PythonTokenizer, semantics=PythonSemantics())
+        return PythonParser()
     except ImportError:
         pass
 
@@ -40,9 +40,7 @@ def parse(source, filename='<unknown>', **kwargs):
 
     tokenizer = PythonTokenizer(source, filename=filename)
     semantics = kwargs.pop('semantics', None)
-    if semantics is None:
-        semantics = PythonSemantics()
-
+    semantics = semantics or PythonSemantics(tokenizer=tokenizer)
     parser = model_python_parser()
     return parser.parse(tokenizer, semantics=semantics, **kwargs)
 
